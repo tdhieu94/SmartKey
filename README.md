@@ -14,6 +14,7 @@ Type Telex as usual. When you type an English word in Vietnamese mode, or a Viet
   - `treen` → `trên`;
   - `truowfng`, `truongwf`, `truwownfg` → `trường`;
   - `this makes sense` comes out right in Vietnamese mode, because ambiguous words are fixed once the context is clear.
+- **Typo fix:** `rtinhf` → `trình`, `tooin` → `tôi`, `ddnag` → `đang` (two keys swapped, an extra key or a neighbouring key), never on English words or code.
 - **Programming-aware:**
   - `var`, `const`, `git push`, `obj.dir` and `my_var` are left alone.
 - **Undo:** press Delete right after an automatic fix to undo it.

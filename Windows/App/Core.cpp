@@ -273,6 +273,7 @@ void reloadSettings() {
     vLanguage = prefs::getInt(L"InputMethod", 1) ? 1 : 0;
     vCheckSpelling = prefs::getInt(L"Spelling", 1); vSetCheckSpelling();
     vRestoreIfWrongSpelling = prefs::getInt(L"RestoreIfInvalidWord", 1);
+    vAutoFixTypo = prefs::getInt(L"AutoFixTypo", 1);   // D60: rtinhf -> trình
     vUseModernOrthography = prefs::getInt(L"ModernOrthography", 1);
     vTelexStyle = prefs::getInt(L"TelexStyle", 0);   // D56: Telex / Simple Telex 1 / 2
     vUseSmartSwitchKey = prefs::getInt(L"UseSmartSwitchKey", 1);
@@ -584,6 +585,7 @@ static LRESULT CALLBACK keyboardHook(int nCode, WPARAM wParam, LPARAM lParam) {
         int correctedCount = pData->newCharCount;
         SendEngineOutput();
         if (vAutoSwitchRequest == 0) ApplyAutoSwitchToEnglish(correctedCount, autoSwitchAtBreak);
+        else if (vAutoFixTypoDone) RememberAutoFix(correctedCount);   // a fixed Telex typo: Backspace puts the keys back (D60)
     }
     return 1;   // consumed
 }

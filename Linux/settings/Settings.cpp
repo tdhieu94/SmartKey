@@ -207,6 +207,7 @@ void buildMain(GtkApplication* app) {
     g_signal_connect(dd, "notify::selected", G_CALLBACK(onMark), nullptr); adw_action_row_add_suffix(ADW_ACTION_ROW(markRow), dd);
     switchRow(g3, "Kiểm tra chính tả", "Chỉ bỏ dấu khi từ đang gõ đúng quy tắc chính tả tiếng Việt.", "Spelling", 1);
     switchRow(g3, "Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ.", "RestoreIfInvalidWord", 1);
+    switchRow(g3, "Tự sửa lỗi gõ Telex", "Gõ xong một từ sai vì đảo hai phím, thừa một phím hoặc trượt sang phím bên cạnh, Vikey sửa thành từ tiếng Việt gần nhất: rtinhf → trình, tooin → tôi. Không đụng tới từ tiếng Anh và tên biến trong code. Bấm Backspace ngay sau đó để lấy lại các phím đã gõ.", "AutoFixTypo", 1);
     // emoji picker
     GtkWidget* g4 = group(page, nullptr);
     switchRow(g4, "Bảng emoji", "Bấm phím tắt để mở bảng emoji ở giữa màn hình. Tìm bằng tiếng Việt hoặc tiếng Anh, gõ Telex vẫn tìm được: \"ngựa\", \"horse\" đều ra 🐴. Enter để chèn, Esc để đóng.", "EmojiPicker", 0);

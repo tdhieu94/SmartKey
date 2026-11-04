@@ -121,7 +121,7 @@ VKEdit VikeyDriver::press(Uint16 key, bool shift, double now) {
                     prevCounts[0] = vAutoSwitchRestoredCount; prevN = 1; prevRestored = true;
                 }
                 enAfterDouble = !atBreak;
-            }
+            } else if (vAutoFixTypoDone) rememberFix(corrected, key, shift);   //a fixed Telex typo: Backspace puts the keys back (D60)
         }
         return e;
     }

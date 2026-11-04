@@ -24,6 +24,9 @@ int main() {
         {"booj source vaay <j ", "bộ source vậy ", "typing on: the whole word is checked again (Tony 2026-10-29)"},
         {"booj source vaay < ", "bộ source vaay ", "the same word again stays as typed"},
         {"xin |hello|<s", "xin hells", "after a switch Backspace doesn't reopen xin (was xin heín)"},
+        {"laapj rtinhf ", "lập trình ", "a Telex typo is fixed at the space (D60)"},
+        {"laapj rtinhf <", "lập rtinhf", "Backspace right after puts the typed keys back (D60)"},
+        {"laapj rtinhf < vieen ", "lập rtinhf viên ", "and they stay (D60)"},
         {"heelo!vieejt", "hêloviệt", "a click on a word put back to its keys: the next word gets Telex (was vieejt)"},
     };
     int fails = 0;

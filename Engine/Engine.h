@@ -107,6 +107,17 @@ extern int vAutoSwitchByTyping;
 extern int vAutoSwitchRequest;
 
 /**
+ * Auto-fix Telex typos (D60): at the end of a word in Vietnamese mode, keys that are no word but one
+ * slip away from a common Vietnamese syllable ("rtinhf", "tooin", "ddnag") become that syllable.
+ * vAutoFixTypo: the setting (1 = on). vAutoFixTypoDone: set by the engine for the key that made a fix,
+ * with the shown word in vAutoSwitchUndoData, so the platform can offer Backspace undo.
+ */
+extern int vAutoFixTypo;
+extern int vAutoFixTypoDone;
+/** Words people really type (shorthand, slang, brands): never auto-corrected. Lowercase, as typed. */
+bool vIsKeepWord(const char* typed);
+
+/**
  * What was on screen before the last automatic correction (engine character data),
  * so the platform can put it back when the user immediately presses the switch hotkey.
  */

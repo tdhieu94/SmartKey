@@ -7,7 +7,6 @@
 #include "Engine.h"
 #include <cmath>
 #include <cstring>
-#include "KeepWords.inc"
 
 float TouchModel::sigma = 0.35f;
 float TouchModel::sigmaY = 0.25f;   // real touches scatter less up/down in key heights (D25: Google TSI, Aalto data)
@@ -170,11 +169,7 @@ bool TouchModel::shouldCorrect(const char* typed, const TMCandidate* c, int coun
     }
     if (vAutoSwitchIsVietnameseSpelling(typed)) return false;               // a rare but valid syllable (thạnh): keep it
     // words people really type (ntn, cta, xog, brands…): never "fixed"
-    for (int lo = 0, hi = kKeepWordsCount - 1; lo <= hi; ) {
-        int mid = (lo + hi) / 2, cmp = strcmp(kKeepWords[mid], typed);
-        if (cmp == 0) return false;
-        if (cmp < 0) lo = mid + 1; else hi = mid - 1;
-    }
+    if (vIsKeepWord(typed)) return false;
     // more words to keep, for experiments (one per line)
     size_t tl = strlen(typed);
     for (const char* p = keepWords; *p; ) {

@@ -115,7 +115,7 @@ static void press(Uint16 key, bool shift) {
                 if (key == KEY_SPACE && vAutoSwitchRestoredCount > 0 && getenv("SIM_NO_RESTORED_PREV") == nullptr) {
                     memcpy(P.prevKeys[0], vAutoSwitchRestoredKeys, vAutoSwitchRestoredCount * sizeof(Uint32)); P.prevCounts[0] = vAutoSwitchRestoredCount; P.prevN = 1; P.prevRestored = true; }
                 P.enAfterDouble = !atBreak;
-            }
+            } else if (vAutoFixTypoDone) rememberFix(corrected, key, shift);   // D60: Backspace puts the typo back
         }
         return;
     }

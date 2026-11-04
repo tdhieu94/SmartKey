@@ -9,6 +9,7 @@ struct MainView: View {
     @AppStorage(PrefKey.spelling) private var spelling = 1
     @AppStorage(PrefKey.restoreIfInvalid) private var restore = 1
     @AppStorage(PrefKey.teencode) private var teencode = 1
+    @AppStorage(PrefKey.autoFixTypo) private var autoFixTypo = 1
     @AppStorage(PrefKey.telexStyle) private var telexStyle = 0
     @AppStorage(PrefKey.mainTab) private var tab = "general"
     @AppStorage(PrefKey.autoSwitch) private var autoSwitch = 1
@@ -154,6 +155,9 @@ struct MainView: View {
                     Tip("Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ.")
                 }
                 .disabled(spelling == 0)
+                Toggle(isOn: flag($autoFixTypo)) {
+                    Tip("Tự sửa lỗi gõ Telex", "Gõ xong một từ sai vì đảo hai phím, thừa một phím hoặc trượt sang phím bên cạnh, Vikey sửa thành từ tiếng Việt gần nhất: rtinhf → trình, tooin → tôi, ddnag → đang. Không đụng tới từ tiếng Anh và tên biến trong code. Bấm Delete ngay sau đó để lấy lại đúng các phím đã gõ.")
+                }
                 Toggle(isOn: flag($teencode)) {
                     Tip("Chính tả teencode", "Giữ các từ kiểu chat như zui zẻ, zậy, dzô, gòy, thík, bíe thay vì trả lại phím. Chỉ những từ teencode quen thuộc, nên từ tiếng Anh như zero, look vẫn giữ nguyên.")
                 }

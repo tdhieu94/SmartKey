@@ -5,6 +5,30 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 60. Auto-fix Telex typos at the end of a word (desktop and phone)
+
+**Status:** Built 2026-11-04, not in a release yet. Asked by Hieu (a programmer who types fast: "looi", "rtinhf").
+
+**Story.** As someone typing Vietnamese fast on a physical keyboard, I want a word I slipped on by one key fixed when I finish it, without Vikey ever touching English or code.
+
+**Decided.**
+- At the end of a word in Vietnamese mode (space, , . ; ? ! Enter, quote, parenthesis), when the keys are no word, the closest common Vietnamese syllable one slip away replaces them: two keys swapped ("rtinhf" → "trình", "ddnag" → "đang", "bnaj" → "bạn"), an extra key ("tooin" → "tôi", "khoongg" → "không"), or a neighbouring QWERTY key. `Engine/Engine.cpp` `asFixTypo`.
+- Scored like D26 (word frequency minus the slip's cost). Swaps are the cheapest slip at speed, so "rtinhf" is "trình", not "tình". The fix must be a common syllable and clearly beat the next one (AS_TYPO_FLOOR, AS_TYPO_MARGIN), and it must spell right when typed (no "neseus" → "nêus").
+- Never touched: a real word in either language (so "looi" stays "lôi": another word was meant, but nothing tells which), the keep-list of D26, words under 4 keys, words with 2+ capitals, words inside foo.bar or my_var, English words with consonants stuck on (href, chdir, dwords, cchar), two English words run together (fixups, songpos).
+- Only words that show Telex intent: w, aa ee oo, dd at the start, or f r x j after a vowel. Not s: plurals and code (acos, stos, cols).
+- When auto switch reads the word as foreign, only a word with Vietnamese-only marks (w, aa ee oo, đ: D9) is still fixed. "bajnn" stays as typed.
+- Backspace right after the fix puts the typed keys back, like the other automatic fixes (D20); typing on keeps them.
+- Setting "Tự sửa lỗi gõ Telex" (Mac, Windows, Linux), on by default. Phones get the same engine fix; their touch auto-correct (D26) still runs on top.
+
+**Measured.**
+- Lazy typist on the chat corpus with 3% typos, wrong words against what was really meant: 361 → 307. No message got worse.
+- Single slips on the 4,000 most common Vietnamese words: of the ones that came out wrong, swaps fixed 26% (wrong fix 0.1%), extra keys 30% (0.4%), neighbouring keys 13% (0.4%).
+- 98k identifier parts from C/C++ headers and this repo, typed in Vietnamese mode: about 20 change, mostly assembly mnemonics and test strings (adif, lahf, ctors, forw).
+- chat_typos ideal user: manual switches 74 → 77, because the golden now expects the fixed word where auto switch reads the typo as English ("tgif"). Wrong words unchanged.
+- Per-key time unchanged within noise (Engine/Driver bench).
+
+**Locked by:** rules D60 (11 cases), D10's invalid-word case moved from "khoongg" (now fixed) to "bieeqk", undo_test (fix, Backspace undo, typing on), goldens updated.
+
 ## 59. ":" and ";" after a space stay where they are (phone keyboards)
 
 **Status:** Shipped 2026-11-02 (Tony changed his mind on the earlier behavior).

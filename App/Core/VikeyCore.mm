@@ -383,6 +383,7 @@ extern "C" {
         vSetCheckSpelling();
         vRestoreIfWrongSpelling = get(@"RestoreIfInvalidWord", 1);
         vTeencode = get(@"Teencode", 1);   // D53: zui zẻ, zậy, gòy, thík
+        vAutoFixTypo = get(@"AutoFixTypo", 1);   // D60: rtinhf -> trình, tooin -> tôi
         vTelexStyle = get(@"TelexStyle", 0);   // D56: Telex / Simple Telex 1 / 2
         vUseModernOrthography = get(@"ModernOrthography", 1);
                 vUseSmartSwitchKey = get(@"UseSmartSwitchKey", 1);
@@ -1303,6 +1304,7 @@ extern "C" {
                 int correctedCount = pData->newCharCount;
                 SendEngineOutput();
                 if (vAutoSwitchRequest == 0) ApplyAutoSwitchToEnglish(correctedCount, autoSwitchAtBreak);
+                else if (vAutoFixTypoDone) RememberAutoFix(correctedCount);   // a fixed Telex typo: Backspace puts the keys back (D60)
             }
             
             return NULL;

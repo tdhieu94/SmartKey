@@ -132,6 +132,7 @@ int main(int argc, char** argv) {
     if (getenv("VIKEY_TEENCODE")) vTeencode = atoi(getenv("VIKEY_TEENCODE"));   // D53 experiments (on by default)
     if (getenv("VIKEY_TELEX_STYLE")) vTelexStyle = atoi(getenv("VIKEY_TELEX_STYLE"));   // D56: 1 / 2 = Simple Telex 1 / 2
     H = (vKeyHookState*)vKeyInit();
+    if (getenv("VIKEY_TYPO")) vAutoFixTypo = atoi(getenv("VIKEY_TYPO"));   // D60 auto-fix Telex typos (on by default)
     if (getenv("VIKEY_AUTO_OFF")) { vAutoSwitchByTyping = 0; vRestoreIfWrongSpelling = 0; }   // a plain Telex input method, for comparison
     if (argc >= 2 && strcmp(argv[1], "lines") == 0) {
         // stdin: "<lang>\t<keys>" per line -> prints "<final text>\t<switches>\t<final lang>"

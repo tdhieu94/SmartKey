@@ -2063,6 +2063,200 @@ bool vAutoSwitchCheckEnglishWord(const Uint32* keys, const int& count,
 bool vAutoSwitchCheckEnglishWord(const Uint32* keys, const int& count) {
     return vAutoSwitchCheckEnglishWord(keys, count, NULL, NULL, 0);
 }
+
+// ---- Auto-fix Telex typos (D60) -----------------------------------------------------------------
+// Fast typing on a physical keyboard slips: two keys swapped ("rtinhf" for "trình", "hocj" typed "ohcj"),
+// one extra key ("tooin" for "tôi") or a neighbouring key. At the end of a word in Vietnamese mode, when
+// the keys are no word in either language, the closest common Vietnamese syllable one edit away replaces them.
+// Conservative for code: only words that show Telex intent (a tone key, w, aa/ee/oo/dd), never a real word,
+// a kept word (shorthand, brands), an identifier inside foo.bar / my_var, or a word with 2+ capitals.
+
+#include "KeepWords.inc"
+static Uint16 asKeyOfLetter(char c);
+int vAutoFixTypo = 1;
+int vAutoFixTypoDone = 0;
+
+bool vIsKeepWord(const char* typed) {
+    for (int lo = 0, hi = kKeepWordsCount - 1; lo <= hi; ) {
+        int mid = (lo + hi) / 2, cmp = strcmp(kKeepWords[mid], typed);
+        if (cmp == 0) return true;
+        if (cmp < 0) lo = mid + 1; else hi = mid - 1;
+    }
+    return false;
+}
+
+#ifndef AS_TYPO_FLOOR
+#define AS_TYPO_FLOOR 15        //the fix must be a common syllable (~30 per million or more, after the edit's cost)
+#endif
+#ifndef AS_TYPO_MARGIN
+#define AS_TYPO_MARGIN 6        //… and four times likelier than the next fix
+#endif
+//cost of each slip, in score points (10 = one order of magnitude less likely)
+//(swaps are the most common slip at speed on a physical keyboard: "rtinhf" is "trình", not "tình")
+#define AS_TYPO_SWAP 2
+#define AS_TYPO_EXTRA_SAME 6    //an extra key next to the same key ("hocjj")
+#define AS_TYPO_EXTRA_NEAR 14   //an extra key next to a neighbouring key (two keys hit at once)
+#define AS_TYPO_EXTRA 20
+#define AS_TYPO_NEAR 16
+
+static const char* const kAsNeighbors[26] = {   //QWERTY: keys next to each letter
+    "qwsz", "vghn", "xdfv", "serfcx", "wsdr", "drtgvc", "ftyhbv", "gyujnb", "ujko", "huikmn", "jiolm", "kop",
+    "njk", "bhjm", "iklp", "ol", "wa", "edft", "awedxz", "rfgy", "yhji", "cfgb", "qase", "zsdc", "tghu", "asx"};
+
+/** Keys for â ê ô ă ơ ư đ: only Vietnamese has them, so the word is a Vietnamese typo, never a foreign word (D9). */
+static bool asModifierIntent(const char* w, int n) {
+    for (int i = 1; i < n; i++) {
+        char c = w[i];
+        if (c == 'w') return true;                                                       //ư ơ ă
+        if (c == w[i - 1] && (c == 'a' || c == 'e' || c == 'o')) return true;              //â ê ô
+        if (i == 1 && c == 'd' && w[0] == 'd') return true;                                 //đ starts a word ("addrs" is no đ)
+    }
+    return false;
+}
+
+static bool asTelexIntent(const char* w, int n) {
+    if (asModifierIntent(w, n)) return true;
+    //a tone key last after a vowel, or right after a vowel. Not s: too common in code ("acos", "stos", "cols")
+    for (int i = 1; i < n; i++) {
+        if (!strchr("frxj", w[i])) continue;
+        if (strchr("aeiouy", w[i - 1])) return true;
+        if (i == n - 1) for (int k = 0; k < i; k++) if (strchr("aeiouy", w[k])) return true;
+    }
+    return false;
+}
+
+/** An English word with a few consonants stuck on (href, chdir, dwords, cchar, fmaxf): code, not a typo. */
+static bool asEnglishWithAffix(const char* w, int n) {
+    char b[AS_KEY_LEN];
+    for (int pre = 0; pre <= 2; pre++) {
+        if (pre > 0 && strchr("aeiouyw", w[pre - 1])) break;
+        if (pre == 2 && w[0] == 'd' && w[1] == 'd') break;                          //đ: "ddnag" is no "nag"
+        for (int suf = 0; suf <= 2; suf++) {
+            if (suf > 0 && strchr("aeiouyw", w[n - suf])) break;
+            if (pre + suf == 0) continue;
+            int len = n - pre - suf;
+            if (len < 3 || (pre && suf && len < 4)) break;                            //"rtinhf" is no "tin"
+            memcpy(b, w + pre, len); b[len] = 0;
+            if (asEnglishScore(b) != AS_MISSING) return true;
+        }
+    }
+    for (int cut = 3; cut <= n - 3; cut++) {                                          //two English words: fixups, songpos
+        memcpy(b, w, cut); b[cut] = 0;
+        if (asEnglishScore(b) == AS_MISSING) continue;
+        if (asEnglishScore(w + cut) != AS_MISSING) return true;
+    }
+    return false;
+}
+
+struct AsTypoBest { char letters[AS_KEY_LEN]; int score; Uint32 shown[MAX_BUFF]; int shownCount; };
+
+static void asTypoTry(const char* w, int cost, AsTypoBest& best, AsTypoBest& second) {
+    Uint32 keys[AS_KEY_LEN], result[MAX_BUFF];
+    int n = (int)strlen(w);
+    for (int i = 2; i < n; i++) if (w[i] == w[i - 1] && w[i] == w[i - 2]) return;   //"looox" undoes the ô and reads "loõ"
+    for (int i = 0; i < n; i++) keys[i] = asKeyOfLetter(w[i]);
+    int count = 0;
+    bool changed = false;
+    int s = asReplay(keys, n, result, count, &changed);
+    if (s == AS_MISSING || count <= 0) return;
+    s -= cost;
+    if (s <= second.score) return;
+    if (!vAutoSwitchIsVietnameseSpelling(w)) return;   //keys that undo themselves ("neseus" reads "nêus")
+    //one entry per rendered text (two edits can give the same word)
+    if (best.shownCount == count && !memcmp(best.shown, result, count * sizeof(Uint32))) { if (s > best.score) { best.score = s; strcpy(best.letters, w); } return; }
+    if (s > best.score) {
+        if (best.shownCount > 0) second = best;
+        strcpy(best.letters, w); best.score = s; memcpy(best.shown, result, count * sizeof(Uint32)); best.shownCount = count;
+    } else if (s > second.score) {
+        if (second.shownCount == count && !memcmp(second.shown, result, count * sizeof(Uint32))) { second.score = s; return; }
+        strcpy(second.letters, w); second.score = s; memcpy(second.shown, result, count * sizeof(Uint32)); second.shownCount = count;
+    }
+}
+
+static bool asFixTypoCore(const int& handleCode);
+/** At a word break in Vietnamese mode: replace a mistyped word by its fix. True when it did (hCode etc. set).
+ *  Trying the fixes replays keys through the engine: what that sets for the platform is put back. */
+static bool asShouldRestoreToEnglishCore();
+static bool asFixTypo(const int& handleCode, bool english) {
+    if (!vAutoFixTypo || vLanguage != 1) return false;
+    int request = vAutoSwitchRequest, side = vAutoSwitchLastSide, restored = vAutoSwitchRestoredCount;
+    if (!english && !vAutoSwitchByTyping) {   //auto switch off: the same fixes as with it on
+        vAutoSwitchByTyping = 1; english = asShouldRestoreToEnglishCore(); vAutoSwitchByTyping = 0;
+    }
+    bool fixed = false;
+    char raw[AS_KEY_LEN];
+    asInitLetters();
+    //auto switch reads it as a foreign word: only a word with Vietnamese-only marks is still a typo
+    if (!english || (asRawWord(KeyStates, _stateIndex, raw) && asModifierIntent(raw, _stateIndex)))
+        fixed = asFixTypoCore(handleCode);
+    vAutoSwitchRequest = request; vAutoSwitchLastSide = side; vAutoSwitchRestoredCount = restored;
+    return fixed;
+}
+static bool asFixTypoCore(const int& handleCode) {
+    if (!vAutoFixTypo || vLanguage != 1 || !_asWordStartOk || !wordFitsBuffer()) return false;
+    int n = _stateIndex;
+    if (n < 4 || n > 12) return false;   //3 keys is too little to go on (abf, adj, crw)
+    asInitLetters();
+    char raw[AS_KEY_LEN];
+    if (!asRawWord(KeyStates, n, raw) || !asFewCapitals(KeyStates, n)) return false;
+    if (!asTelexIntent(raw, n)) return false;
+    if (asEnglishScore(raw) != AS_MISSING || vIsKeepWord(raw) || asEnglishWithAffix(raw, n)) return false;   //a word, as typed
+    char key[AS_KEY_LEN]; bool transformed;
+    if (asWordKey(key, transformed) && asVietnameseScore(key) != AS_MISSING) return false;   //it reads as Vietnamese
+    if (vAutoSwitchIsVietnameseSpelling(raw)) return false;                     //a rare but valid syllable
+    AsTypoBest best, second;
+    best.score = second.score = AS_MISSING; best.shownCount = second.shownCount = 0;
+    char w[AS_KEY_LEN];
+    for (int i = 0; i < n; i++) {
+        if (i + 1 < n && raw[i] != raw[i + 1]) {                                  //two keys swapped
+            strcpy(w, raw); w[i] = raw[i + 1]; w[i + 1] = raw[i];
+            asTypoTry(w, AS_TYPO_SWAP, best, second);
+        }
+        if (n >= 5) {                                                             //an extra key (never down to 3 keys)
+        int j = 0; for (int k = 0; k < n; k++) if (k != i) w[j++] = raw[k]; w[j] = 0;
+        bool same = (i > 0 && raw[i - 1] == raw[i]) || (i + 1 < n && raw[i + 1] == raw[i]);
+        bool near = (i > 0 && strchr(kAsNeighbors[raw[i - 1] - 'a'], raw[i])) || (i + 1 < n && strchr(kAsNeighbors[raw[i + 1] - 'a'], raw[i]));
+        asTypoTry(w, same ? AS_TYPO_EXTRA_SAME : near ? AS_TYPO_EXTRA_NEAR : AS_TYPO_EXTRA, best, second);
+        }
+        for (const char* p = kAsNeighbors[raw[i] - 'a']; *p; p++) {               //a neighbouring key
+            strcpy(w, raw); w[i] = *p;
+            asTypoTry(w, AS_TYPO_NEAR, best, second);
+        }
+    }
+    if (best.shownCount <= 0 || best.score < AS_TYPO_FLOOR) return false;
+    if (second.shownCount > 0 && best.score - second.score < AS_TYPO_MARGIN) return false;
+    //the fix as keys, capitals kept by position ("Rtinhf" -> "Trình")
+    int m = (int)strlen(best.letters);
+    Uint32 keys[AS_KEY_LEN];
+    for (int i = 0; i < m; i++) keys[i] = asKeyOfLetter(best.letters[i]) | (i < n && (KeyStates[i] & CAPS_MASK) ? CAPS_MASK : 0);
+    if (n > 0 && (KeyStates[0] & CAPS_MASK)) keys[0] |= CAPS_MASK;
+    //what is on screen now, for Backspace undo
+    int shown = _index;
+    vAutoSwitchUndoCount = 0;
+    for (int x = 0; x < shown && vAutoSwitchUndoCount < MAX_BUFF; x++) vAutoSwitchUndoData[vAutoSwitchUndoCount++] = GET(TypingWord[x]);
+    //type the fix on a scratch session, then make it the current word
+    AsEngineState saved;
+    asSaveState(saved);
+    _spaceCount = 0;
+    startNewSession();
+    for (int x = 0; x < m; x++) vKeyHandleEvent(vKeyEvent::Keyboard, vKeyEventState::KeyDown, (Uint16)(keys[x] & CHAR_MASK), (keys[x] & CAPS_MASK) ? 1 : 0, false);
+    Uint32 word[MAX_BUFF], states[MAX_BUFF];
+    int index = _index, stateIndex = _stateIndex;
+    if (index <= 0 || index >= MAX_BUFF || stateIndex >= MAX_BUFF) { asRestoreState(saved); return false; }
+    memcpy(word, TypingWord, index * sizeof(Uint32));
+    memcpy(states, KeyStates, stateIndex * sizeof(Uint32));
+    asRestoreState(saved);
+    memcpy(TypingWord, word, index * sizeof(Uint32));
+    memcpy(KeyStates, states, stateIndex * sizeof(Uint32));
+    _index = index; _stateIndex = stateIndex;
+    tempDisableKey = false;
+    hCode = handleCode;
+    hBPC = shown;
+    hNCC = index;
+    for (int x = 0; x < index; x++) hData[index - 1 - x] = GET(TypingWord[x]);
+    vAutoFixTypoDone = 1;
+    return true;
+}
 /*==========================================================================================================*/
 
 
@@ -2079,6 +2273,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
                      const Uint16& data,
                      const Uint8& capsStatus,
                      const bool& otherControlKey) {
+    vAutoFixTypoDone = 0;
     if (event == vKeyEvent::Keyboard && (data == KEY_LEFT || data == KEY_RIGHT) && capsStatus != 1 && !otherControlKey) {
         if (data == KEY_LEFT && _navOffset == 0 && (_index > 0 || _spaceCount > 0)) {   //in a word, or right after one
             navForget(); _navSaved = new AsEngineState(); asSaveState(*_navSaved);
@@ -2110,10 +2305,15 @@ void vKeyHandleEvent(const vKeyEvent& event,
         _asApostrophe = data == KEY_QUOTE && capsStatus != 1;
         //after a space the word was already checked at the space: a later ( . , etc. must not reach back over the space
         //("zẻo" space "(" gave "zzero(", D53; same as the hyphen in D52)
-        bool asSwitch = (asIsSwitchBreak(event, data, capsStatus, otherControlKey) && _spaceCount == 0 && asShouldRestoreToEnglish()) ||
-                        (data == KEY_MINUS && capsStatus != 1 && !otherControlKey && _spaceCount == 0 && asHyphenRestore());   //a hyphen after a space isn't part of the word ("wr -" gave "wr wr-", D52)
+        bool switchBreak = asIsSwitchBreak(event, data, capsStatus, otherControlKey) && _spaceCount == 0;
+        bool english = switchBreak && asShouldRestoreToEnglish();
+        bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english);   //a Telex typo: the word one key away (D60)
+        bool asSwitch = !typoFixed && (english ||
+                        (data == KEY_MINUS && capsStatus != 1 && !otherControlKey && _spaceCount == 0 && asHyphenRestore()));   //a hyphen after a space isn't part of the word ("wr -" gave "wr wr-", D52)
         _asApostrophe = false;
-        if (asSwitch) {
+        if (typoFixed) {
+            //a Telex typo: the word one key away (D60)
+        } else if (asSwitch) {
             asRestoreToEnglish(vRestoreAndStartNewSession); //auto switch: an English word typed in Vietnamese mode
         } else if (vRestoreIfWrongSpelling && isWordBreak(event, state, data)) { //restore key if wrong spelling with break-key
             if (!tempDisableKey && vCheckSpelling) {
@@ -2154,7 +2354,10 @@ void vKeyHandleEvent(const vKeyEvent& event,
         if (!tempDisableKey && vCheckSpelling) {
             checkSpelling(true); //force check spelling
         }
-        if (asShouldRestoreToEnglish()) { //auto switch: an English word typed in Vietnamese mode
+        bool english = asShouldRestoreToEnglish();
+        if (asFixTypo(vRestore, english)) { //a Telex typo: the word one key away (D60)
+            _spaceCount++;
+        } else if (english) { //auto switch: an English word typed in Vietnamese mode
             asRestoreToEnglish(vRestore);
             _spaceCount++;
         } else if (vRestoreIfWrongSpelling && tempDisableKey) { //restore key if wrong spelling

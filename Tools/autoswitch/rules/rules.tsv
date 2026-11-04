@@ -54,7 +54,7 @@ D8.2	1	getSmartSwitchKeySaveDataFromApp 	getSmartSwitchKeySaveDataFromApp 	0	32 
 D8.2	1	getSmartSwitchKeySaveDataFromApps 	gétmartSwitchKeySaveDataFromApps 	1	33+ keys: the first ones are gone, so the word stays as Telex made it (restoring lost its g, or typed it twice: #13)
 D8.2	1	windowsSubsystemForLinuxSettings 	ưindowsSubsystemForLinuxSettings 	1	32 letters on screen: more than the apps delete in one go, so it stays (was typed twice on Mac, Windows, Linux)
 D9	1	tooi thicsh lanwm 	tôi thích lanwm 	1	Vietnamese typo (has ă/â/ơ/ư/đ marks) never switches the language (shown as typed keys: D10 restore-if-invalid is on)
-D10	1	khoongg 	khoongg 	1	an invalid word is kept as typed keys without switching (restore-if-invalid, on by default); stays Vietnamese
+D10	1	bieeqk 	bieeqk 	1	an invalid word is kept as typed keys without switching (restore-if-invalid, on by default); stays Vietnamese (was khoongg: D60 now fixes it to không)
 D10	1	windoows 	windoows 	0	a multi-syllable invalid word counts as a foreign word: kept as typed, switches to English
 D10	1	x.getSmartSwitchKeySaveDataFromApps 	x.gétmartSwitchKeySaveDataFromApps 	1	restore-if-invalid has the same limit (was x.etSmartSwitch...)
 D13	1	this makes 	this makes 	0	an English-only word right after an ambiguous one ("thí") switches at once and fixes it (Tony)
@@ -158,3 +158,14 @@ D56	1	w 	ư 	1	Telex: a lone w is ư
 D58	1	docs 	docs 	0	docs (documentation) in Vietnamese mode stays English (X report, Tony)
 D58	1	xem docs nhes 	xem docs nhé 	1	docs in a Vietnamese sentence
 D58	1	nois docs 	nói dóc 	1	"nói dóc" (to lie) still converts
+D60	1	rtinhf 	trình 	1	two keys swapped (tr typed rt) is fixed at the space
+D60	1	laapj rtinhf vieen 	lập trình viên 	1	a typo inside Vietnamese text
+D60	1	Rtinhf. 	Trình. 	1	capital kept by position; a break key ends the word too
+D60	1	tooin 	tôi 	1	an extra key
+D60	1	ddnag, 	đang, 	1	swap after đ, ended by a comma
+D60	1	khoongg 	không 	1	a doubled key
+D60	1	bnaj 	bạn 	1	swap at the start
+D60	1	looi 	lôi 	1	a real word is never changed (even when another was meant)
+D60	1	href chdir dwords ctor cfgs 	href chdir dwords ctor cfgs 	1	code: English words with consonants stuck on are left alone
+D60	1	obj.rtinhf my_tooin 	obj.rtinhf my-tooin 	1	identifiers inside foo.bar and my_var are left alone
+D60	1	tmp src impl args ptr func len buf 	tmp src impl args ptr func len buf 	0	common code abbreviations are left alone
