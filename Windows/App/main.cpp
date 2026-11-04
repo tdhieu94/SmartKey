@@ -3,6 +3,9 @@
 #include <shellapi.h>
 #include <string>
 #include <windowsx.h>
+#include <tlhelp32.h>
+#include <cwctype>
+#include <set>
 #include "Core.h"
 #include "Prefs.h"
 #include "Site.h"
@@ -23,6 +26,7 @@ static const UINT WM_VIKEY_SETLANG = WM_APP + 2;   // tests: wParam = language (
 static const UINT WM_VIKEY_EMOJI = WM_APP + 5;     // the emoji hotkey, posted from the keyboard hook
 static const UINT WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");   // Explorer (re)started: the tray is empty
 static const UINT TIMER_FLUSH = 1;
+static const UINT TIMER_OTHER_IME = 2;
 enum { ID_VIET = 100, ID_ENG, ID_SETTINGS, ID_AUTOSWITCH, ID_UPDATE, ID_LOGTOGGLE, ID_LOG, ID_ABOUT, ID_QUIT, ID_FEEDBACK, ID_GUIDE };
 
 static HWND _hwnd; static NOTIFYICONDATAW _nid = {};
@@ -54,6 +58,31 @@ static bool darkTaskbar() {
     HKEY h; DWORD v = 1, s = sizeof(v);
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &h) == ERROR_SUCCESS) { RegQueryValueExW(h, L"SystemUsesLightTheme", nullptr, nullptr, (LPBYTE)&v, &s); RegCloseKey(h); }
     return v == 0;
+}
+/// Another Vietnamese input method running at the same time (UniKey, EVKey, OpenKey, Vikey...) also rewrites every word:
+/// the two fight over the same keys and the text comes out wrong (words left as typed, words deleted). Each one found
+/// is named once per run, with what to do.
+static void checkOtherInputMethods() {
+    static const wchar_t* known[][2] = {
+        {L"unikeynt.exe", L"UniKey"}, {L"unikey.exe", L"UniKey"}, {L"evkey.exe", L"EVKey"}, {L"evkey64.exe", L"EVKey"}, {L"evkey32.exe", L"EVKey"},
+        {L"openkey.exe", L"OpenKey"}, {L"openkey64.exe", L"OpenKey"}, {L"openkey32.exe", L"OpenKey"}, {L"vikey.exe", L"Vikey"},
+        {L"gotiengviet.exe", L"GoTiengViet"}, {L"labankey.exe", L"Laban Key"}, {L"vietkey.exe", L"Vietkey"}, {L"vietkey2000.exe", L"Vietkey"}};
+    static std::set<std::wstring> warned; static bool showing = false;
+    if (showing) return;
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0); if (snap == INVALID_HANDLE_VALUE) return;
+    std::wstring found;
+    PROCESSENTRY32W pe = {}; pe.dwSize = sizeof(pe);
+    for (BOOL ok = Process32FirstW(snap, &pe); ok; ok = Process32NextW(snap, &pe)) {
+        std::wstring n = pe.szExeFile; for (auto& c : n) c = (wchar_t)towlower(c);
+        for (auto& k : known) if (n == k[0] && !warned.count(k[1])) { warned.insert(k[1]); if (found.find(k[1]) == std::wstring::npos) found += (found.empty() ? L"" : L", ") + std::wstring(k[1]); }
+    }
+    CloseHandle(snap);
+    if (found.empty()) return;
+    std::wstring t = L"SmartKey đang chạy cùng lúc với " + found + L".\n\nHai bộ gõ tiếng Việt cùng xử lý một phím nên chữ sẽ bị sai: có từ không được bỏ dấu, có từ bị xoá mất. "
+                     L"Hãy thoát " + found + L" (chuột phải vào biểu tượng của nó ở khay hệ thống, chọn Thoát) và tắt tự khởi động cùng Windows của nó.";
+    showing = true;
+    MessageBoxW(nullptr, t.c_str(), L"SmartKey", MB_ICONWARNING | MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+    showing = false;
 }
 static void updateTray(int lang) {
     _nid.hIcon = lang ? _iconV : _iconE;
@@ -115,7 +144,7 @@ static LRESULT CALLBACK wndProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
     case updater::WM_UPDATER: updater::onEvent(wp); return 0;
     case WM_VIKEY_SETLANG: core::setLanguageQuiet((int)wp); return 1;
     case WM_VIKEY_EMOJI: emoji::toggle(); return 0;
-    case WM_TIMER: if (wp == TIMER_FLUSH) core::flushTypingLog(); return 0;
+    case WM_TIMER: if (wp == TIMER_FLUSH) core::flushTypingLog(); else if (wp == TIMER_OTHER_IME) { SetTimer(h, TIMER_OTHER_IME, 60000, nullptr); checkOtherInputMethods(); } return 0;
     case site::WM_SITE: { HWND w; std::wstring host = site::lastHost(&w); if (w == GetForegroundWindow()) core::onSiteChanged(host); return 0; }
     case WM_SETTINGCHANGE: {
         if (!lp || wcscmp((LPCWSTR)lp, L"ImmersiveColorSet") != 0) return 0;   // a theme change: every other setting broadcast is ignored
@@ -153,6 +182,7 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE, PWSTR, int) {
     vikey::core::setEmojiHotkeyHandler([] { PostMessageW(_hwnd, WM_VIKEY_EMOJI, 0, 0); });   // not inside the hook: opening can take a moment
     if (!vikey::prefs::has(L"FirstRunDone")) vikey::ui::showSettings(inst, true);
     SetTimer(_hwnd, TIMER_FLUSH, 10000, nullptr);
+    SetTimer(_hwnd, TIMER_OTHER_IME, 3000, nullptr);   // first check soon after start, then every minute
     vikey::updater::start(_hwnd);
     vikey::crash::checkAtLaunch();   // after a crash: ask to send the report (on its own thread)
     vikey::site::start(_hwnd);   // per-website memory and password fields, read off the hook thread

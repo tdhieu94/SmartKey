@@ -1,3 +1,2 @@
-- Tự sửa lỗi gõ Telex khi gõ nhanh: rtinhf → trình, tooin → tôi, ddnag → đang
-- Bấm Backspace ngay sau khi sửa để lấy lại đúng các phím đã gõ
-- Bản đầu tiên của SmartKey, dựa trên Vikey của Tony Dinh
+- Windows: cảnh báo khi UniKey, EVKey, OpenKey, Vikey... đang chạy cùng lúc (hai bộ gõ cùng xử lý phím làm chữ bị sai: từ không được bỏ dấu, từ bị xoá)
+- Logo trong cửa sổ cài đặt và hướng dẫn trên Windows, Linux đổi thành SmartKey
