@@ -1,0 +1,3 @@
+- Tự sửa lỗi gõ Telex khi gõ nhanh: rtinhf → trình, tooin → tôi, ddnag → đang
+- Bấm Backspace ngay sau khi sửa để lấy lại đúng các phím đã gõ
+- Bản đầu tiên của SmartKey, dựa trên Vikey của Tony Dinh

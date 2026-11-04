@@ -4,7 +4,7 @@ SmartKey là bộ gõ tiếng Việt (Telex) cho Windows, macOS và Linux, dựa
 
 **Tải về:** [bản mới nhất](https://github.com/tdhieu94/SmartKey/releases/latest). Windows và macOS tự cập nhật mỗi ngày; Linux báo khi có bản mới.
 
-**Phát hành bản mới:** tăng `MARKETING_VERSION` trong `project.yml`, rồi `git tag v<version> && git push origin v<version>`. GitHub Actions build cả ba hệ điều hành, ký bản cập nhật (secret `SPARKLE_ED_KEY`) và đăng release kèm `appcast.xml` / `release.json`.
+**Phát hành bản mới:** tăng `MARKETING_VERSION` trong `project.yml`, ghi thay đổi vào `RELEASE_NOTES.md`, rồi merge vào main. GitHub Actions build cả ba hệ điều hành, ký bản cập nhật (secret `SPARKLE_ED_KEY`) và tự đăng release kèm `appcast.xml` / `release.json`.
 
 ---
 

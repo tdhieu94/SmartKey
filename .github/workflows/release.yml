@@ -1,6 +1,7 @@
 # Builds SmartKey for Windows, Linux and macOS on every push and pull request.
-# A tag v<version> (git tag v1.0.1 && git push origin v1.0.1) also publishes a GitHub release with the
-# installers and the update feeds (appcast.xml, release.json) that the apps check every day (D61).
+# A push to main whose project.yml MARKETING_VERSION has no release yet (or a tag v<version>) also publishes
+# the GitHub release v<version> with the installers and the update feeds (appcast.xml, release.json) that the
+# apps check every day (D61). Release notes: RELEASE_NOTES.md. To release: bump the version, update the notes, merge.
 name: build and release
 
 on:
@@ -129,26 +130,36 @@ jobs:
           path: dist/*
 
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
     needs: [version, engine-tests, windows, linux, macos]
     runs-on: ubuntu-latest
+    env:
+      TAG: v${{ needs.version.outputs.ver }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+      - name: already released?
+        id: exists
+        run: |
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "$TAG is already released: bump MARKETING_VERSION in project.yml to release again"; echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/download-artifact@v4
+        if: steps.exists.outputs.skip != '1'
         with:
           path: dist
           merge-multiple: true
       - name: sign and write the update feeds
+        if: steps.exists.outputs.skip != '1'
         env:
           SPARKLE_ED_KEY: ${{ secrets.SPARKLE_ED_KEY }}
         run: |
           [ -n "$SPARKLE_ED_KEY" ] || { echo "::error::Add the SPARKLE_ED_KEY secret (Settings > Secrets and variables > Actions)"; exit 1; }
           pip install -q cryptography
-          NOTES=$(git tag -l --format='%(contents)' "$TAG" 2>/dev/null) python3 Tools/release/feed.py ${{ needs.version.outputs.ver }} ${{ needs.version.outputs.build }} dist
+          NOTES=$(cat RELEASE_NOTES.md 2>/dev/null) python3 Tools/release/feed.py ${{ needs.version.outputs.ver }} ${{ needs.version.outputs.build }} dist
           ls -l dist
       - name: publish
-        env:
-          GH_TOKEN: ${{ github.token }}
+        if: steps.exists.outputs.skip != '1'
         run: |
           V=${{ needs.version.outputs.ver }}
           cat > notes.md <<NOTES
@@ -158,5 +169,8 @@ jobs:
           - **Linux:** smartkey_${V}_amd64.deb (Ubuntu/Debian) hoặc file .rpm (Fedora)
 
           Đã cài rồi thì SmartKey tự cập nhật mỗi ngày (Windows, macOS) hoặc báo khi có bản mới (Linux).
+
+          ## Có gì mới
           NOTES
-          gh release create "$TAG" dist/* --title "SmartKey $V" --notes-file notes.md --verify-tag
+          cat RELEASE_NOTES.md >> notes.md
+          gh release create "$TAG" dist/* --title "SmartKey $V" --notes-file notes.md --target "$GITHUB_SHA"
