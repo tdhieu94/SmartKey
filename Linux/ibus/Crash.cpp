@@ -74,7 +74,7 @@ void install(const char* version) {
     std::string d = dir();
     std::string cur; for (size_t i = 1; i <= d.size(); i++) if (i == d.size() || d[i] == '/') { cur = d.substr(0, i); mkdir(cur.c_str(), 0700); }
     _dirfd = open(d.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC);
-    Buf h; h.s("Vikey crash report\nVersion: "); h.s(version); h.s("\nProcess: ibus-engine-vikey\n");
+    Buf h; h.s("SmartKey crash report\nVersion: "); h.s(version); h.s("\nProcess: ibus-engine-vikey\n");
     memcpy(_header, h.b, std::min(h.n, sizeof _header)); _headerLen = std::min(h.n, sizeof _header);
     time_t now = time(nullptr); struct tm tm; localtime_r(&now, &tm); _gmtoff = tm.tm_gmtoff;
     void* warm[4]; backtrace(warm, 4);   // loads libgcc_s now: the first backtrace() may allocate

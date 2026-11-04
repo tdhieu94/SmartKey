@@ -7,7 +7,7 @@ struct MenuBarContent: View {
 
     var body: some View {
         if state.needsOnboarding {
-            Button("Cấp quyền cho Vikey…") { OnboardingWindow.show() }
+            Button("Cấp quyền cho SmartKey…") { OnboardingWindow.show() }
             Divider()
         }
         Toggle(isOn: Binding(get: { state.language == 1 }, set: { state.setLanguage($0 ? 1 : 0) })) {
@@ -29,14 +29,14 @@ struct MenuBarContent: View {
             }
         }
         Divider()
-        Button("Mở Vikey…") { Windows.main.show() }
+        Button("Mở SmartKey…") { Windows.main.show() }
             .keyboardShortcut(",")
         Divider()
         Button("Hướng dẫn…") { OnboardingWindow.show() }
         Button("Gửi góp ý…") { Feedback.open() }
         Button("Kiểm tra cập nhật…") { Updater.shared.checkForUpdates() }
-        Button("Giới thiệu Vikey") { AboutPanel.show() }
-        Button("Thoát Vikey") { NSApp.terminate(nil) }
+        Button("Giới thiệu SmartKey") { AboutPanel.show() }
+        Button("Thoát SmartKey") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }
 }
@@ -58,7 +58,7 @@ struct DebugMenu: View {
 enum Feedback {
     static var url: URL {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-        return URL(string: "https://vikey.app/feedback?platform=macos&v=\(v)")!
+        return URL(string: "https://github.com/tdhieu94/SmartKey/issues/new?body=v\(v)")!
     }
     static func open() { NSWorkspace.shared.open(url) }
 }

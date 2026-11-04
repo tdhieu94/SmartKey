@@ -49,7 +49,7 @@ void refresh() {
     gtk_widget_set_sensitive(G.next, !waiting && !(G.step == EMOJI && emojiOn && emojiKey == 0));
     int vi = language();
     std::string hk = hotkeyDisplay(currentHotkey());
-    gtk_label_set_text(GTK_LABEL(G.practiceText), vi ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. Vikey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
+    gtk_label_set_text(GTK_LABEL(G.practiceText), vi ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. SmartKey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
                                                     : ("Bạn đang ở tiếng Anh: bấm " + hk + " để sang tiếng Việt, rồi gõ các phím bên dưới.").c_str());
     gtk_label_set_text(GTK_LABEL(G.typingNow), vi ? "Đang gõ: Tiếng Việt" : "Đang gõ: English");
     recorderRefresh(G.hotkeyRec); recorderRefresh(G.emojiRec);
@@ -65,8 +65,8 @@ void finish() { prefs::setInt("OnboardingDone", 1); stopTimer(); bool m = G.then
 
 GtkWidget* welcomePage() {
     GtkWidget* b = vbox(14);
-    gtk_box_append(GTK_BOX(b), label("Vikey dùng kiểu gõ Telex", "title-2"));
-    gtk_box_append(GTK_BOX(b), label("Vikey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, Vikey tự nhận ra và không bỏ dấu nhầm.", "dim-label"));
+    gtk_box_append(GTK_BOX(b), label("SmartKey dùng kiểu gõ Telex", "title-2"));
+    gtk_box_append(GTK_BOX(b), label("SmartKey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, SmartKey tự nhận ra và không bỏ dấu nhầm.", "dim-label"));
     GtkWidget* grid = gtk_grid_new(); gtk_grid_set_column_spacing(GTK_GRID(grid), 18); gtk_grid_set_row_spacing(GTK_GRID(grid), 8); gtk_widget_add_css_class(grid, "telex-card");
     const char* t[][2] = {{"aa","â"},{"aw","ă"},{"ee","ê"},{"oo","ô"},{"ow","ơ"},{"uw","ư"},{"dd","đ"},{"w","ư"},{"s","sắc"},{"f","huyền"},{"r","hỏi"},{"x","ngã"},{"j","nặng"},{"z","xoá dấu"}};
     for (int i = 0; i < 14; i++) {
@@ -87,12 +87,12 @@ void openKeyboardSettings() {
 }
 GtkWidget* setupPage() {
     GtkWidget* b = vbox(16);
-    gtk_box_append(GTK_BOX(b), label("Thêm Vikey vào nguồn nhập", "title-2"));
-    gtk_box_append(GTK_BOX(b), label("Vikey là một bộ gõ IBus: thêm Vikey vào nguồn nhập để gõ tiếng Việt trong mọi ứng dụng. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.", "dim-label"));
+    gtk_box_append(GTK_BOX(b), label("Thêm SmartKey vào nguồn nhập", "title-2"));
+    gtk_box_append(GTK_BOX(b), label("SmartKey là một bộ gõ IBus: thêm SmartKey vào nguồn nhập để gõ tiếng Việt trong mọi ứng dụng. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.", "dim-label"));
     GtkWidget* steps = vbox(8);
     gtk_box_append(GTK_BOX(steps), numbered(1, "Bấm nút bên dưới để mở Cài đặt › Bàn phím"));
-    gtk_box_append(GTK_BOX(steps), numbered(2, "Bấm + trong Nguồn nhập, chọn Vietnamese › Vietnamese (Vikey)"));
-    gtk_box_append(GTK_BOX(steps), numbered(3, "Quay lại đây, Vikey sẽ tự nhận ra"));
+    gtk_box_append(GTK_BOX(steps), numbered(2, "Bấm + trong Nguồn nhập, chọn Vietnamese › Vietnamese (SmartKey)"));
+    gtk_box_append(GTK_BOX(steps), numbered(3, "Quay lại đây, SmartKey sẽ tự nhận ra"));
     gtk_box_append(GTK_BOX(b), steps);
     GtkWidget* btn = gtk_button_new_with_label("Mở Cài đặt bàn phím"); gtk_widget_add_css_class(btn, "suggested-action"); gtk_widget_add_css_class(btn, "pill"); gtk_widget_set_halign(btn, GTK_ALIGN_START);
     g_signal_connect(btn, "clicked", G_CALLBACK(+[](GtkButton*, gpointer) { openKeyboardSettings(); }), nullptr);
@@ -128,7 +128,7 @@ GtkWidget* practicePage() {
 GtkWidget* hotkeyPage() {
     GtkWidget* b = vbox(14);
     gtk_box_append(GTK_BOX(b), label("Phím chuyển Anh/Việt", "title-2"));
-    gtk_box_append(GTK_BOX(b), label("Vikey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.", "dim-label"));
+    gtk_box_append(GTK_BOX(b), label("SmartKey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.", "dim-label"));
     GtkWidget* h = hbox(12);
     G.hotkeyRec = recorderNew([] { return currentHotkey(); }, [](int k) { prefs::setInt("SwitchKeyStatus", k | (currentHotkey() & 0x8000)); refresh(); }, true, false);
     G.typingNow = label("", "dim-label", false);
@@ -168,7 +168,7 @@ void buildGuide(GtkApplication* app, bool thenMain) {
     GtkCssProvider* p = gtk_css_provider_new();
     gtk_css_provider_load_from_string(p, ".step-num { min-width: 20px; min-height: 20px; border-radius: 10px; background: alpha(@window_fg_color, 0.40); color: @window_bg_color; font-weight: bold; font-size: 0.85em; }");
     gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(p), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    G.win = adw_application_window_new(app); gtk_window_set_title(GTK_WINDOW(G.win), "Vikey"); gtk_window_set_default_size(GTK_WINDOW(G.win), 540, 470 + 47); gtk_window_set_resizable(GTK_WINDOW(G.win), FALSE);
+    G.win = adw_application_window_new(app); gtk_window_set_title(GTK_WINDOW(G.win), "SmartKey"); gtk_window_set_default_size(GTK_WINDOW(G.win), 540, 470 + 47); gtk_window_set_resizable(GTK_WINDOW(G.win), FALSE);
     g_signal_connect(G.win, "close-request", G_CALLBACK(+[](GtkWindow*, gpointer) -> gboolean { prefs::setInt("OnboardingDone", 1); stopTimer(); return FALSE; }), nullptr);
     GtkWidget* tv = adw_toolbar_view_new(); GtkWidget* hb = adw_header_bar_new(); adw_toolbar_view_add_top_bar(ADW_TOOLBAR_VIEW(tv), hb);
     GtkWidget* root = vbox(0); for (auto f : {gtk_widget_set_margin_start, gtk_widget_set_margin_end, gtk_widget_set_margin_bottom}) f(root, 28); gtk_widget_set_margin_top(root, 8);
@@ -188,8 +188,8 @@ void buildGuide(GtkApplication* app, bool thenMain) {
     GtkWidget* foot = hbox(8); gtk_widget_set_margin_top(foot, 20);
     G.back = gtk_button_new_with_label("Quay lại"); g_signal_connect(G.back, "clicked", G_CALLBACK(+[](GtkButton*, gpointer) { go((Step)(G.step - 1)); }), nullptr); gtk_box_append(GTK_BOX(foot), G.back);
     GtkWidget* sp = hbox(0); gtk_widget_set_hexpand(sp, TRUE); gtk_box_append(GTK_BOX(foot), sp);
-    G.waitBox = hbox(6); GtkWidget* spin = gtk_spinner_new(); gtk_spinner_start(GTK_SPINNER(spin)); gtk_box_append(GTK_BOX(G.waitBox), spin); gtk_box_append(GTK_BOX(G.waitBox), label("Đang chờ Vikey trong nguồn nhập…", "dim-label", false)); gtk_widget_set_margin_end(G.waitBox, 6);
-    G.doneBox = hbox(6); GtkWidget* okI = gtk_image_new_from_icon_name("emblem-ok-symbolic"); gtk_widget_add_css_class(okI, "ok-mark"); gtk_box_append(GTK_BOX(G.doneBox), okI); gtk_box_append(GTK_BOX(G.doneBox), label("Đã thêm Vikey", "dim-label", false)); gtk_widget_set_margin_end(G.doneBox, 6);
+    G.waitBox = hbox(6); GtkWidget* spin = gtk_spinner_new(); gtk_spinner_start(GTK_SPINNER(spin)); gtk_box_append(GTK_BOX(G.waitBox), spin); gtk_box_append(GTK_BOX(G.waitBox), label("Đang chờ SmartKey trong nguồn nhập…", "dim-label", false)); gtk_widget_set_margin_end(G.waitBox, 6);
+    G.doneBox = hbox(6); GtkWidget* okI = gtk_image_new_from_icon_name("emblem-ok-symbolic"); gtk_widget_add_css_class(okI, "ok-mark"); gtk_box_append(GTK_BOX(G.doneBox), okI); gtk_box_append(GTK_BOX(G.doneBox), label("Đã thêm SmartKey", "dim-label", false)); gtk_widget_set_margin_end(G.doneBox, 6);
     gtk_box_append(GTK_BOX(foot), G.waitBox); gtk_box_append(GTK_BOX(foot), G.doneBox);
     G.next = gtk_button_new_with_label(""); gtk_widget_add_css_class(G.next, "suggested-action"); g_signal_connect(G.next, "clicked", G_CALLBACK(onNext), nullptr); gtk_box_append(GTK_BOX(foot), G.next);
     gtk_box_append(GTK_BOX(root), foot);

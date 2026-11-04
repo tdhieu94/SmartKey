@@ -22,7 +22,7 @@ enum MainWindowProposals {
         let size = host.fittingSize
         let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.titled, .closable, .miniaturizable],
                               backing: .buffered, defer: false)
-        window.title = "Vikey"
+        window.title = "SmartKey"
         window.contentView = host
         host.layoutSubtreeIfNeeded()
         RunLoop.main.run(until: Date().addingTimeInterval(0.4))
@@ -86,7 +86,7 @@ private func on(_ title: String, _ tip: String, _ v: Bool = true) -> some View {
     LabeledContent { HotkeyBox(text: "⌃⌘E") } label: { Tip("Phím mở bảng emoji", "") }
 }
 @ViewBuilder private func generalRows() -> some View {
-    on("Mở Vikey khi đăng nhập", "")
+    on("Mở SmartKey khi đăng nhập", "")
     on("Tự động cập nhật", "")
     LabeledContent { Button("Gửi góp ý…") {} } label: { Tip("Góp ý", "") }
 }

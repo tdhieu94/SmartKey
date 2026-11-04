@@ -21,7 +21,7 @@ enum Migration {
         let fm = FileManager.default
         if let support = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
             let from = support.appendingPathComponent("OpenKey/typing-log.jsonl")
-            let toDir = support.appendingPathComponent("Vikey")
+            let toDir = support.appendingPathComponent("SmartKey")
             let to = toDir.appendingPathComponent("typing-log.jsonl")
             if fm.fileExists(atPath: from.path), !fm.fileExists(atPath: to.path) {
                 try? fm.createDirectory(at: toDir, withIntermediateDirectories: true)

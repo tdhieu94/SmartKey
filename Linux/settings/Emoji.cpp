@@ -428,7 +428,7 @@ void buildEmoji(GtkApplication* app) {
         "button.emoji-tone-item { font-size: 20px; padding: 2px 6px; }\n");
     gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-    P.win = gtk_window_new(); gtk_window_set_application(GTK_WINDOW(P.win), app); gtk_window_set_title(GTK_WINDOW(P.win), "Vikey Emoji");
+    P.win = gtk_window_new(); gtk_window_set_application(GTK_WINDOW(P.win), app); gtk_window_set_title(GTK_WINDOW(P.win), "SmartKey Emoji");
     gtk_window_set_decorated(GTK_WINDOW(P.win), FALSE); gtk_window_set_resizable(GTK_WINDOW(P.win), FALSE);
     gtk_widget_remove_css_class(P.win, "background"); gtk_widget_add_css_class(P.win, "vikey-emoji");
     gtk_window_set_default_size(GTK_WINDOW(P.win), WIDTH + 2 * SHADOW, HEIGHT + 2 * SHADOW);

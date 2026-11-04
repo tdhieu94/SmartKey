@@ -56,7 +56,7 @@ enum ExcludedApps {
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = true
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
-        panel.message = "Chọn ứng dụng mà Vikey không gõ tiếng Việt"
+        panel.message = "Chọn ứng dụng mà SmartKey không gõ tiếng Việt"
         panel.prompt = "Thêm"
         guard panel.runModal() == .OK else { return }
         for url in panel.urls {

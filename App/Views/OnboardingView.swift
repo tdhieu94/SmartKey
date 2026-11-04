@@ -8,7 +8,7 @@ enum OnboardingWindow {
         if window?.isVisible != true { window = nil }   // opened again later (menu › Hướng dẫn): start from the first step
         if window == nil {
             let w = NSWindow(contentViewController: NSHostingController(rootView: OnboardingView().environmentObject(AppState.shared)))
-            w.title = "Vikey"
+            w.title = "SmartKey"
             w.styleMask = [.titled, .closable]
             w.isReleasedWhenClosed = false
             window = w
@@ -114,8 +114,8 @@ struct OnboardingView: View {
 
     private var welcome: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Vikey dùng kiểu gõ Telex").font(.title2.weight(.semibold))
-            Text("Vikey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, Vikey tự nhận ra và không bỏ dấu nhầm.")
+            Text("SmartKey dùng kiểu gõ Telex").font(.title2.weight(.semibold))
+            Text("SmartKey chỉ hỗ trợ Telex, kiểu gõ phổ biến nhất. Bạn gõ tiếng Anh bình thường, SmartKey tự nhận ra và không bỏ dấu nhầm.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 8) {
                 GridRow { telex("aa", "â"); telex("aw", "ă"); telex("ee", "ê"); telex("oo", "ô") }
@@ -140,13 +140,13 @@ struct OnboardingView: View {
 
     private var permission: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Cho phép Vikey đọc phím gõ").font(.title2.weight(.semibold))
-            Text("Vikey cần quyền Trợ năng (Accessibility) để biến phím bạn gõ thành chữ tiếng Việt. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.")
+            Text("Cho phép SmartKey đọc phím gõ").font(.title2.weight(.semibold))
+            Text("SmartKey cần quyền Trợ năng (Accessibility) để biến phím bạn gõ thành chữ tiếng Việt. Mọi thứ xử lý ngay trên máy, không gửi đi đâu.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 8) {
                 Label("Bấm nút bên dưới để mở Cài đặt hệ thống", systemImage: "1.circle.fill")
-                Label("Bật Vikey trong danh sách Trợ năng", systemImage: "2.circle.fill")
-                Label("Quay lại đây, Vikey sẽ tự bắt đầu", systemImage: "3.circle.fill")
+                Label("Bật SmartKey trong danh sách Trợ năng", systemImage: "2.circle.fill")
+                Label("Quay lại đây, SmartKey sẽ tự bắt đầu", systemImage: "3.circle.fill")
             }
             .foregroundStyle(.secondary)
             HStack {
@@ -165,7 +165,7 @@ struct OnboardingView: View {
     private var hotkeyStep: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Phím chuyển Anh/Việt").font(.title2.weight(.semibold))
-            Text("Vikey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.")
+            Text("SmartKey tự chuyển khi bạn gõ lẫn tiếng Anh. Khi muốn tự chuyển, bấm phím tắt này. Bấm vào ô để đổi phím.")
                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 12) {
                 HotkeyRecorder(raw: Binding(get: { hotkeyRaw }, set: { k in
@@ -229,7 +229,7 @@ private struct PracticeStep: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Gõ thử").font(.title2.weight(.semibold))
-            Text(vietnamese ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. Vikey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
+            Text(vietnamese ? "Gõ đúng các phím bên dưới, kể cả tiếng Anh. SmartKey bỏ dấu cho tiếng Việt và để nguyên tiếng Anh."
                             : "Bạn đang ở tiếng Anh: bấm \(hotkey) để sang tiếng Việt, rồi gõ các phím bên dưới.")
                 .foregroundStyle(.secondary)
                 .lineLimit(2, reservesSpace: true)   // both texts take two lines: switching VI/EN must not move the fields (Tony)

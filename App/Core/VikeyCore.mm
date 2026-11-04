@@ -71,7 +71,7 @@ int vLanguage = 1, vSwitchKeyStatus = 0x7A000206, vCheckSpelling = 1, vUseModern
 int vRestoreIfWrongSpelling = 1, vFixRecommendBrowser = 1, vUseSmartSwitchKey = 1, vOtherLanguage = 1;
 int vAutoSwitchByTyping = 1, vPerformLayoutCompat = 0;
 
-NSNotificationName const VikeyLanguageDidChangeNotification = @"VikeyLanguageDidChange";
+NSNotificationName const VikeyLanguageDidChangeNotification = @"SmartKeyLanguageDidChange";
 
 static void VKLanguageChanged(BOOL rememberForContext);
 
@@ -726,7 +726,7 @@ extern "C" {
 
     NSString* TLLogPath() {
         NSString* dir = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES).firstObject
-                         stringByAppendingPathComponent:@"Vikey"];
+                         stringByAppendingPathComponent:@"SmartKey"];
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
         return [dir stringByAppendingPathComponent:@"typing-log.jsonl"];
     }

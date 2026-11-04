@@ -46,7 +46,7 @@ enum LaunchAtLogin {
         do {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
-            NSLog("Vikey: launch at login change failed: \(error)")
+            NSLog("SmartKey: launch at login change failed: \(error)")
         }
     }
 }

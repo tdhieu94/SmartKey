@@ -191,11 +191,11 @@ static void buildProps(VikeyEngine* e) {
     e->pLang = ibus_property_new("lang", PROP_TYPE_TOGGLE, ibus_text_new_from_string("Tiếng Việt"), nullptr, ibus_text_new_from_string("Chuyển Anh/Việt (Alt+Z)"), TRUE, TRUE, PROP_STATE_CHECKED, nullptr);
     ibus_property_set_symbol(e->pLang, ibus_text_new_from_string("V"));
     e->pAuto = ibus_property_new("auto", PROP_TYPE_TOGGLE, ibus_text_new_from_string("Tự chuyển Anh/Việt"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_CHECKED, nullptr);
-    e->pOpen = ibus_property_new("open", PROP_TYPE_NORMAL, ibus_text_new_from_string("Mở Vikey…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
+    e->pOpen = ibus_property_new("open", PROP_TYPE_NORMAL, ibus_text_new_from_string("Mở SmartKey…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     e->pLog = ibus_property_new("log", PROP_TYPE_NORMAL, ibus_text_new_from_string("Xem nhật ký gõ…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     e->pGuide = ibus_property_new("guide", PROP_TYPE_NORMAL, ibus_text_new_from_string("Hướng dẫn…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     e->pUpdate = ibus_property_new("update", PROP_TYPE_NORMAL, ibus_text_new_from_string("Kiểm tra cập nhật…"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
-    e->pAbout = ibus_property_new("about", PROP_TYPE_NORMAL, ibus_text_new_from_string("Giới thiệu Vikey"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
+    e->pAbout = ibus_property_new("about", PROP_TYPE_NORMAL, ibus_text_new_from_string("Giới thiệu SmartKey"), nullptr, nullptr, TRUE, TRUE, PROP_STATE_UNCHECKED, nullptr);
     // the Mac menu bar's order; the typing log is a debug item there (Gỡ lỗi), shown only while logging is on
     ibus_property_set_visible(e->pLog, prefs::getInt("TypingLogEnabled", 0) != 0);
     for (IBusProperty* p : {e->pLang, e->pAuto, e->pOpen, e->pGuide, e->pUpdate, e->pAbout, e->pLog}) { g_object_ref_sink(p); ibus_prop_list_append(e->props, p); }
@@ -331,8 +331,8 @@ int main(int argc, char** argv) {
     ibus_factory_add_engine(factory, "vikey", VIKEY_TYPE_ENGINE);
     if (ibusMode) ibus_bus_request_name(_bus, "org.freedesktop.IBus.Vikey", 0);
     else {   // run by hand (development): register the component ourselves
-        IBusComponent* c = ibus_component_new("org.freedesktop.IBus.Vikey", "Vikey", VIKEY_VERSION, "GPL-3.0", "Tony Dinh", "https://vikey.app", "", "ibus-vikey");
-        ibus_component_add_engine(c, ibus_engine_desc_new("vikey", "Vikey", "Vikey - Gõ tiếng Việt, tự chuyển Anh/Việt", "vi", "GPL-3.0", "Tony Dinh", "vikey", "us"));
+        IBusComponent* c = ibus_component_new("org.freedesktop.IBus.Vikey", "SmartKey", VIKEY_VERSION, "GPL-3.0", "Tony Dinh", "https://github.com/tdhieu94/SmartKey", "", "ibus-vikey");
+        ibus_component_add_engine(c, ibus_engine_desc_new("vikey", "SmartKey", "SmartKey - Gõ tiếng Việt, tự chuyển Anh/Việt", "vi", "GPL-3.0", "Tony Dinh", "vikey", "us"));
         ibus_bus_register_component(_bus, c);
     }
     GFile* dir = g_file_new_for_path(prefs::configDir().c_str()); g_mkdir_with_parents(prefs::configDir().c_str(), 0700);
