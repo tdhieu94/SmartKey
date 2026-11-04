@@ -1,23 +1,23 @@
-name: Vikey
+name: SmartKey
 options:
-  bundleIdPrefix: com.devuap
+  bundleIdPrefix: io.github.tdhieu94
   deploymentTarget:
     macOS: "13.0"
   createIntermediateGroups: true
 settings:
   base:
-    DEVELOPMENT_TEAM: 3H6967F79Y
+    CODE_SIGN_IDENTITY: "-"   # ad-hoc: SmartKey has no Apple Developer ID yet
     SWIFT_VERSION: "5.10"
     CLANG_CXX_LANGUAGE_STANDARD: c++17
-    MARKETING_VERSION: "1.0.31"
-    CURRENT_PROJECT_VERSION: "33"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
 packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: 2.10.1
 targets:
-  Vikey:
+  SmartKey:
     type: application
     platform: macOS
     dependencies:
@@ -32,8 +32,8 @@ targets:
           - "platforms/linux.h"
     settings:
       base:
-        PRODUCT_NAME: Vikey
-        PRODUCT_BUNDLE_IDENTIFIER: com.devuap.vikey
+        PRODUCT_NAME: SmartKey
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.tdhieu94.smartkey
         INFOPLIST_FILE: App/Info.plist
         CODE_SIGN_ENTITLEMENTS: App/Vikey.entitlements
         CODE_SIGN_STYLE: Manual

@@ -54,11 +54,13 @@ endif()
 
 # ---- packages: .deb (Ubuntu/Debian) and .rpm (Fedora) via CPack -----------------------------------------
 # The Arch .pkg.tar.zst is repacked from the .deb in CI (Linux/packaging/make-pacman.sh), not a CPack generator.
-set(CPACK_PACKAGE_NAME "vikey")
+set(CPACK_PACKAGE_NAME "smartkey")
+set(CPACK_DEBIAN_PACKAGE_CONFLICTS "vikey")
+set(CPACK_RPM_PACKAGE_CONFLICTS "vikey")
 set(CPACK_PACKAGE_VERSION "${VIKEY_VERSION}")
-set(CPACK_PACKAGE_CONTACT "Tony Dinh <patent@tdinh.me>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Vikey - Vietnamese input (Telex) with automatic English/Vietnamese switching")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://vikey.app")
+set(CPACK_PACKAGE_CONTACT "Hieu <tdhieu94@users.noreply.github.com>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "SmartKey - Vietnamese input (Telex) with automatic English/Vietnamese switching and typo fix (based on Vikey)")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/tdhieu94/SmartKey")
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "ibus (>= 1.5), libgtk-4-1, libadwaita-1-0, libgstreamer1.0-0, gstreamer1.0-plugins-base, gstreamer1.0-plugins-good, libnotify-bin, fonts-noto-color-emoji, curl")
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")

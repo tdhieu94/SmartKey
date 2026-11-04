@@ -5,8 +5,8 @@ struct AcknowledgementsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                section("Mã nguồn", "Vikey dùng mã nguồn của:", Acknowledgements.code)
-                section("Dữ liệu từ ngữ", "Vikey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.", Acknowledgements.wordData)
+                section("Mã nguồn", "SmartKey dùng mã nguồn của:", Acknowledgements.code)
+                section("Dữ liệu từ ngữ", "SmartKey tự chuyển Anh/Việt nhờ thống kê từ ngữ đếm từ các nguồn này. Trong ứng dụng chỉ có số liệu thống kê, không có văn bản nào.", Acknowledgements.wordData)
                 section("Dữ liệu kiểm thử", "Chỉ dùng để đo và cải thiện độ chính xác, không có trong ứng dụng.", Acknowledgements.testData)
             }
             .padding(24)

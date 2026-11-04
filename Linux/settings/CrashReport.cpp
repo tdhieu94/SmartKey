@@ -15,8 +15,8 @@
 #include <glib/gstdio.h>
 using namespace vikey;
 
-static const char* kTitle = "Vikey vừa bị thoát đột ngột";
-static const char* kBody = "Gửi báo cáo lỗi để Vikey sửa lỗi này? Báo cáo chỉ có thông tin kỹ thuật: vị trí lỗi trong mã, phiên bản Vikey và Linux. Không có chữ bạn đã gõ.";
+static const char* kTitle = "SmartKey vừa bị thoát đột ngột";
+static const char* kBody = "Gửi báo cáo lỗi để SmartKey sửa lỗi này? Báo cáo chỉ có thông tin kỹ thuật: vị trí lỗi trong mã, phiên bản SmartKey và Linux. Không có chữ bạn đã gõ.";
 
 static std::string osDescription() {   // "Ubuntu 24.04.1 LTS, Linux 6.8.0-45-generic aarch64"
     std::string name = "Linux";
@@ -37,7 +37,7 @@ static std::string sendReport(const std::string& path) {
     gchar* tmpDir = g_dir_make_tmp("vikey-crash-XXXXXX", nullptr); if (!tmpDir) return "";
     std::string name = path.substr(path.rfind('/') + 1), tmp = std::string(tmpDir) + "/" + name;
     { std::ofstream o(tmp, std::ios::binary); o << text; }
-    const char* url = getenv("VIKEY_CRASH_URL"); if (!url || !*url) url = "https://vikey.app/api/crash";   // override for tests
+    const char* url = getenv("VIKEY_CRASH_URL"); if (!url || !*url) { g_free(tmpDir); return ""; }   // SmartKey has no crash server: set VIKEY_CRASH_URL to send
     std::string fPlatform = "platform=linux", fVersion = std::string("version=") + VIKEY_VERSION, fOs = "os=" + osDescription();
     std::string fReport = "report=@" + tmp + ";filename=" + name + ";type=text/plain";
     gchar* argv[] = {(gchar*)"curl", (gchar*)"-sS", (gchar*)"--max-time", (gchar*)"30",
@@ -49,7 +49,7 @@ static std::string sendReport(const std::string& path) {
     g_unlink(tmp.c_str()); g_rmdir(tmpDir); g_free(tmpDir);
     bool ok = resp.find("\"ok\":true") != std::string::npos;
     logLine((ok ? "sent " : "failed ") + name + " " + resp);
-    g_printerr("Vikey crash report %s: %s\n", ok ? "sent" : "not sent", resp.c_str());
+    g_printerr("SmartKey crash report %s: %s\n", ok ? "sent" : "not sent", resp.c_str());
     return ok ? resp : "";
 }
 
@@ -76,7 +76,7 @@ static void askWithDialog(GtkApplication* app) {
 }
 /// The notification: blocks until the user picks an action or closes it. False when it couldn't be shown.
 static bool askWithNotification() {
-    gchar* argv[] = {(gchar*)"notify-send", (gchar*)"-a", (gchar*)"Vikey", (gchar*)"-i", (gchar*)"vikey", (gchar*)"-u", (gchar*)"normal",
+    gchar* argv[] = {(gchar*)"notify-send", (gchar*)"-a", (gchar*)"SmartKey", (gchar*)"-i", (gchar*)"vikey", (gchar*)"-u", (gchar*)"normal",
         (gchar*)"-A", (gchar*)"send=Gửi báo cáo", (gchar*)"-A", (gchar*)"always=Luôn gửi, không hỏi lại", (gchar*)"-A", (gchar*)"no=Không gửi",
         (gchar*)kTitle, (gchar*)kBody, nullptr};
     gchar* out = nullptr; gint status = 0;

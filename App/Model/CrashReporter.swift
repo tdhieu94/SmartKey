@@ -6,7 +6,8 @@ import AppKit
 enum CrashReporter {
     static let autoKey = "CrashReportsAuto"          // the user chose "always send, don't ask"
     private static let seenKey = "CrashReportsSeenUntil"
-    static var endpoint = URL(string: UserDefaults.standard.string(forKey: "crashEndpoint") ?? "https://vikey.app/api/crash")!
+    /// SmartKey has no crash server: reports stay on disk unless the "crashEndpoint" default is set.
+    static var endpoint: URL? = UserDefaults.standard.string(forKey: "crashEndpoint").flatMap { URL(string: $0) }
 
     /// Reports from the last 3 days that weren't handled yet, newest first.
     static func pending() -> [URL] {
@@ -16,7 +17,7 @@ enum CrashReporter {
         let files = (try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
         return files.filter { u in
             let n = u.lastPathComponent
-            guard n.hasPrefix("Vikey-") || n.hasPrefix("Vikey_"), ["ips", "crash"].contains(u.pathExtension) else { return false }
+            guard n.hasPrefix("SmartKey-") || n.hasPrefix("SmartKey_"), ["ips", "crash"].contains(u.pathExtension) else { return false }
             let d = (try? u.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate)?.timeIntervalSince1970 ?? 0
             return d > since
         }.sorted { $0.lastPathComponent > $1.lastPathComponent }
@@ -33,8 +34,8 @@ enum CrashReporter {
 
     @MainActor static func ask(_ report: URL) {
         let a = NSAlert()
-        a.messageText = "Vikey vừa bị thoát đột ngột"
-        a.informativeText = "Gửi báo cáo lỗi để Vikey sửa lỗi này? Báo cáo chỉ có thông tin kỹ thuật: vị trí lỗi trong mã, phiên bản Vikey và macOS. Không có chữ bạn đã gõ."
+        a.messageText = "SmartKey vừa bị thoát đột ngột"
+        a.informativeText = "Gửi báo cáo lỗi để SmartKey sửa lỗi này? Báo cáo chỉ có thông tin kỹ thuật: vị trí lỗi trong mã, phiên bản SmartKey và macOS. Không có chữ bạn đã gõ."
         a.addButton(withTitle: "Gửi báo cáo")
         a.addButton(withTitle: "Không gửi")
         a.showsSuppressionButton = true
@@ -61,11 +62,12 @@ enum CrashReporter {
         body.append("--\(boundary)\r\nContent-Disposition: form-data; name=\"report\"; filename=\"\(report.lastPathComponent)\"\r\nContent-Type: text/plain\r\n\r\n".data(using: .utf8)!)
         body.append(Data(text.prefix(1_900_000).utf8))
         body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        guard let endpoint else { return }
         var req = URLRequest(url: endpoint)
         req.httpMethod = "POST"
         req.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         URLSession.shared.uploadTask(with: req, from: body) { _, resp, err in
-            NSLog("Vikey crash report sent: %d %@", (resp as? HTTPURLResponse)?.statusCode ?? -1, err?.localizedDescription ?? "")
+            NSLog("SmartKey crash report sent: %d %@", (resp as? HTTPURLResponse)?.statusCode ?? -1, err?.localizedDescription ?? "")
         }.resume()
     }
 }

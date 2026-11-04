@@ -5,6 +5,17 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 61. SmartKey: own name, releases and updates on GitHub
+
+**Status:** Built 2026-11-04. Asked by Hieu: "đưa lên github repo Smartkey và phát hành release để cài đặt, và cho tự động cập nhật".
+
+**Decided.**
+- Published as SmartKey (tdhieu94/SmartKey, public), based on Vikey. Product name, bundle id (io.github.tdhieu94.smartkey), Windows installer AppId, registry key, exe name and Linux package name (smartkey, conflicts with vikey) are SmartKey's, so it never takes Vikey's updates and can sit next to it. Internal code names (VikeyCore, the IBus engine id) stay.
+- `.github/workflows/release.yml` builds Windows x64 (Inno Setup), Linux (.deb, .rpm) and macOS (ad-hoc signed .dmg + Sparkle .zip) on every push; a tag v<version> (must match project.yml) also publishes a GitHub release.
+- Updates: `Tools/release/feed.py` signs the Mac zip and the Windows installer with a new Sparkle EdDSA key (secret SPARKLE_ED_KEY; public key in App/Info.plist and Windows/App/Updater.cpp) and writes appcast.xml and release.json onto the release. The apps read them from releases/latest/download/.
+- Crash reports stay on the computer (no SmartKey server); feedback opens GitHub Issues.
+- Known: without an Apple Developer ID the Mac app is ad-hoc signed: Gatekeeper asks on first open, and macOS may ask again for Accessibility after an update. Windows installers are not Authenticode-signed (SmartScreen warns on first run).
+
 ## 60. Auto-fix Telex typos at the end of a word (desktop and phone)
 
 **Status:** Built 2026-11-04, not in a release yet. Asked by Hieu (a programmer who types fast: "looi", "rtinhf").

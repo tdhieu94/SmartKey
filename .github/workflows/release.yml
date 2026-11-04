@@ -1,0 +1,162 @@
+# Builds SmartKey for Windows, Linux and macOS on every push and pull request.
+# A tag v<version> (git tag v1.0.1 && git push origin v1.0.1) also publishes a GitHub release with the
+# installers and the update feeds (appcast.xml, release.json) that the apps check every day (D61).
+name: build and release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # the version and build number: from the tag, else project.yml (build = major*10000 + minor*100 + patch, always rising)
+  TAG: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || '' }}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.v.outputs.ver }}
+      build: ${{ steps.v.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          VER=$(grep MARKETING_VERSION project.yml | grep -o '"[^"]*"' | tr -d '"')
+          # every platform reads its version from project.yml: a tag must match it
+          if [ -n "$TAG" ] && [ "${TAG#v}" != "$VER" ]; then echo "::error::tag $TAG but project.yml MARKETING_VERSION is $VER"; exit 1; fi
+          IFS=. read -r A B C <<< "$VER"
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"
+          echo "build=$((A * 10000 + B * 100 + ${C:-0}))" >> "$GITHUB_OUTPUT"
+          echo "SmartKey $VER"
+
+  engine-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -q && sudo apt-get install -yq ninja-build
+      - name: rules and goldens
+        run: |
+          cmake -S Linux -B Linux/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DVIKEY_IBUS=OFF
+          cmake --build Linux/build
+          cd Tools/autoswitch
+          python3 rules/run_rules.py
+          python3 rules/golden.py check
+          driver/undo_test
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: build
+        shell: pwsh
+        run: |
+          cmake -S Windows -B Windows/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DVIKEY_VERSION=${{ needs.version.outputs.ver }} -DVIKEY_BUILD=${{ needs.version.outputs.build }}
+          cmake --build Windows/build --target vikey
+          Get-ChildItem Windows/build/App/*.exe
+      - name: installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          & $iscc /DVersion=${{ needs.version.outputs.ver }} /DArch=x64 /DSrc=..\build\App Windows\installer\Vikey.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item Windows\installer\out\*.exe dist\
+          Compress-Archive -Path Windows\build\App\SmartKey.exe -DestinationPath dist\SmartKey-${{ needs.version.outputs.ver }}-x64-portable.zip
+          Get-ChildItem dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+
+  linux:
+    needs: version
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -yq ninja-build rpm libibus-1.0-dev libglib2.0-dev libgtk-4-dev libadwaita-1-dev \
+            libgstreamer1.0-dev libx11-dev libfontconfig-dev
+      - name: build and package
+        run: |
+          cmake -S Linux -B Linux/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DVIKEY_VERSION=${{ needs.version.outputs.ver }}
+          cmake --build Linux/build
+          (cd Linux/build && cpack -G "DEB;RPM")
+          mkdir -p dist && cp Linux/build/*.deb Linux/build/*.rpm dist/
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*
+
+  macos:
+    needs: version
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -project SmartKey.xcodeproj -scheme SmartKey -configuration Release -derivedDataPath build \
+            MARKETING_VERSION=${{ needs.version.outputs.ver }} CURRENT_PROJECT_VERSION=${{ needs.version.outputs.build }} \
+            CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= ENABLE_HARDENED_RUNTIME=NO OTHER_CODE_SIGN_FLAGS=--deep build | tail -40
+          test -d build/Build/Products/Release/SmartKey.app
+      - name: package
+        run: |
+          V=${{ needs.version.outputs.ver }}
+          mkdir -p dist dmg
+          cp -R build/Build/Products/Release/SmartKey.app dmg/
+          ln -s /Applications dmg/Applications
+          ditto -c -k --sequesterRsrc --keepParent build/Build/Products/Release/SmartKey.app dist/SmartKey-$V-mac.zip
+          hdiutil create -volname SmartKey -srcfolder dmg -ov -format UDZO dist/SmartKey-$V.dmg
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [version, engine-tests, windows, linux, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: sign and write the update feeds
+        env:
+          SPARKLE_ED_KEY: ${{ secrets.SPARKLE_ED_KEY }}
+        run: |
+          [ -n "$SPARKLE_ED_KEY" ] || { echo "::error::Add the SPARKLE_ED_KEY secret (Settings > Secrets and variables > Actions)"; exit 1; }
+          pip install -q cryptography
+          NOTES=$(git tag -l --format='%(contents)' "$TAG" 2>/dev/null) python3 Tools/release/feed.py ${{ needs.version.outputs.ver }} ${{ needs.version.outputs.build }} dist
+          ls -l dist
+      - name: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=${{ needs.version.outputs.ver }}
+          cat > notes.md <<NOTES
+          ## Tải về
+          - **Windows:** SmartKey-$V-x64-Setup.exe
+          - **macOS:** SmartKey-$V.dmg (app chưa được Apple ký: lần đầu mở, vào Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Vẫn mở)
+          - **Linux:** smartkey_${V}_amd64.deb (Ubuntu/Debian) hoặc file .rpm (Fedora)
+
+          Đã cài rồi thì SmartKey tự cập nhật mỗi ngày (Windows, macOS) hoặc báo khi có bản mới (Linux).
+          NOTES
+          gh release create "$TAG" dist/* --title "SmartKey $V" --notes-file notes.md --verify-tag

@@ -89,7 +89,7 @@ final class HostedWindow<Content: View> {
 @MainActor
 enum Windows {
     static let main: HostedWindow<MainView> = {
-        let w = HostedWindow(title: "Vikey", size: nil, resizable: false) { MainView() }
+        let w = HostedWindow(title: "SmartKey", size: nil, resizable: false) { MainView() }
         w.hideTitle = true
         return w
     }()
@@ -143,15 +143,15 @@ enum AboutPanel {
             if let link { attrs[.link] = URL(string: link) }
             credits.append(NSAttributedString(string: text, attributes: attrs))
         }
-        add("Tony Dinh\n")
-        add("Dựa trên ")
+        add("Hieu\n")
+        add("Dựa trên Vikey của Tony Dinh và ")
         add("OpenKey", link: "https://github.com/tuyenvm/OpenKey")
         add(" của Tuyen Mai\nMã nguồn mở theo giấy phép GPL-3.0\n\n")
-        add("vikey.app", link: "https://vikey.app")
+        add("SmartKey", link: "https://github.com/tdhieu94/SmartKey")
         add("  ·  ")
-        add("GitHub", link: "https://github.com/tonyminibot/Vikey")
+        add("Vikey", link: "https://github.com/tonyminibot/Vikey")
         add("  ·  ")
         add("Ghi nhận", link: "https://vikey.app/acknowledgements")
-        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "Vikey"])
+        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "SmartKey"])
     }
 }

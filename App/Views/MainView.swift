@@ -58,13 +58,13 @@ struct MainView: View {
                 Windows.main.fitToContent(height: newHeight)
             }
         }
-        .alert("Vikey chưa được phép đọc địa chỉ trang web", isPresented: $browserDenied) {
+        .alert("SmartKey chưa được phép đọc địa chỉ trang web", isPresented: $browserDenied) {
             Button("Mở Cài đặt hệ thống") {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation")!)
             }
             Button("Để sau", role: .cancel) {}
         } message: {
-            Text("Vào Quyền riêng tư & Bảo mật › Tự động hoá, bật trình duyệt của bạn dưới Vikey, rồi bật lại tuỳ chọn này.")
+            Text("Vào Quyền riêng tư & Bảo mật › Tự động hoá, bật trình duyệt của bạn dưới SmartKey, rồi bật lại tuỳ chọn này.")
         }
     }
 
@@ -120,14 +120,14 @@ struct MainView: View {
     }
     @ViewBuilder private var autoRows: some View {
                 Toggle(isOn: flag($autoSwitch)) {
-                    Tip("Tự chuyển Anh/Việt", "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), Vikey tự sửa từ đó và chuyển chế độ. Bấm Xoá ngay sau đó để hoàn tác.")
+                    Tip("Tự chuyển Anh/Việt", "Gõ một từ tiếng Anh khi đang ở tiếng Việt (hoặc ngược lại), SmartKey tự sửa từ đó và chuyển chế độ. Bấm Xoá ngay sau đó để hoàn tác.")
                 }
                 Toggle(isOn: flag($pauseAfterManual)) {
-                    Tip("Tạm dừng 5 giây", "Khi bạn tự bấm chuyển Anh/Việt, Vikey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.")
+                    Tip("Tạm dừng 5 giây", "Khi bạn tự bấm chuyển Anh/Việt, SmartKey không tự chuyển trong 5 giây, để giữ đúng lựa chọn của bạn.")
                 }
                 .disabled(autoSwitch == 0)
                 Toggle(isOn: flag($smartSwitch)) {
-                    Tip("Nhớ theo ứng dụng", "Vikey nhớ bạn dùng tiếng Anh hay tiếng Việt ở mỗi ứng dụng và tự chuyển lại khi bạn quay về ứng dụng đó.")
+                    Tip("Nhớ theo ứng dụng", "SmartKey nhớ bạn dùng tiếng Anh hay tiếng Việt ở mỗi ứng dụng và tự chuyển lại khi bạn quay về ứng dụng đó.")
                 }
                 Toggle(isOn: Binding(get: { perSite }, set: { setPerSite($0) })) {
                     Tip("Nhớ theo trang web", "Trong Safari, Chrome, Edge, Brave, Arc, Vivaldi, Opera: nhớ tiếng Anh hay tiếng Việt cho từng trang web. Cần quyền đọc địa chỉ tab đang mở, chỉ dùng trên máy bạn.")
@@ -152,11 +152,11 @@ struct MainView: View {
                     Tip("Kiểm tra chính tả", "Chỉ bỏ dấu khi từ đang gõ đúng quy tắc chính tả tiếng Việt.")
                 }
                 Toggle(isOn: flag($restore)) {
-                    Tip("Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, Vikey trả lại đúng các phím bạn đã gõ.")
+                    Tip("Trả lại phím khi sai", "Khi gõ xong một từ sai chính tả tiếng Việt, SmartKey trả lại đúng các phím bạn đã gõ.")
                 }
                 .disabled(spelling == 0)
                 Toggle(isOn: flag($autoFixTypo)) {
-                    Tip("Tự sửa lỗi gõ Telex", "Gõ xong một từ sai vì đảo hai phím, thừa một phím hoặc trượt sang phím bên cạnh, Vikey sửa thành từ tiếng Việt gần nhất: rtinhf → trình, tooin → tôi, ddnag → đang. Không đụng tới từ tiếng Anh và tên biến trong code. Bấm Delete ngay sau đó để lấy lại đúng các phím đã gõ.")
+                    Tip("Tự sửa lỗi gõ Telex", "Gõ xong một từ sai vì đảo hai phím, thừa một phím hoặc trượt sang phím bên cạnh, SmartKey sửa thành từ tiếng Việt gần nhất: rtinhf → trình, tooin → tôi, ddnag → đang. Không đụng tới từ tiếng Anh và tên biến trong code. Bấm Delete ngay sau đó để lấy lại đúng các phím đã gõ.")
                 }
                 Toggle(isOn: flag($teencode)) {
                     Tip("Chính tả teencode", "Giữ các từ kiểu chat như zui zẻ, zậy, dzô, gòy, thík, bíe thay vì trả lại phím. Chỉ những từ teencode quen thuộc, nên từ tiếng Anh như zero, look vẫn giữ nguyên.")
@@ -181,7 +181,7 @@ struct MainView: View {
                 }
     }
     @ViewBuilder private var excludedRows: some View {
-                Text("Trong các ứng dụng này Vikey không gõ tiếng Việt và không tự chuyển (hợp với phần mềm điều khiển máy từ xa). Phím chuyển Anh/Việt vẫn dùng được.")
+                Text("Trong các ứng dụng này SmartKey không gõ tiếng Việt và không tự chuyển (hợp với phần mềm điều khiển máy từ xa). Phím chuyển Anh/Việt vẫn dùng được.")
                     .font(.callout).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 ForEach(excluded.filter(ExcludedApps.isInstalled), id: \.self) { id in
@@ -212,15 +212,15 @@ struct MainView: View {
     }
     @ViewBuilder private var generalRows: some View {
                 Toggle(isOn: Binding(get: { launchAtLogin }, set: { LaunchAtLogin.set($0); launchAtLogin = LaunchAtLogin.isEnabled })) {
-                    Tip("Mở Vikey khi đăng nhập", "Tự mở Vikey mỗi khi bạn đăng nhập vào máy Mac.")
+                    Tip("Mở SmartKey khi đăng nhập", "Tự mở SmartKey mỗi khi bạn đăng nhập vào máy Mac.")
                 }
                 Toggle(isOn: Binding(get: { updater.automatic }, set: { updater.automatic = $0 })) {
-                    Tip("Tự động cập nhật", "Mỗi ngày Vikey kiểm tra bản mới trên vikey.app, tự tải về và cài khi bạn thoát Vikey hoặc tắt máy.")
+                    Tip("Tự động cập nhật", "Mỗi ngày SmartKey kiểm tra bản mới trên GitHub, tự tải về và cài khi bạn thoát SmartKey hoặc tắt máy.")
                 }
                 LabeledContent {
                     Button("Gửi góp ý…") { Feedback.open() }
                 } label: {
-                    Tip("Góp ý", "Báo lỗi hoặc góp ý cho Vikey: mở trang vikey.app/feedback trong trình duyệt.")
+                    Tip("Góp ý", "Báo lỗi hoặc góp ý cho SmartKey: mở trang GitHub Issues trong trình duyệt.")
                 }
     }
 

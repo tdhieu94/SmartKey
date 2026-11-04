@@ -1,4 +1,14 @@
-# Vikey
+# SmartKey
+
+SmartKey là bộ gõ tiếng Việt (Telex) cho Windows, macOS và Linux, dựa trên [Vikey](https://github.com/tonyminibot/Vikey) của Tony Dinh. Ngoài tự chuyển Anh/Việt như Vikey, SmartKey **tự sửa lỗi gõ Telex** khi gõ nhanh (hợp với dân lập trình): `rtinhf` → trình, `tooin` → tôi, `ddnag` → đang. Từ tiếng Anh và tên biến trong code được giữ nguyên.
+
+**Tải về:** [bản mới nhất](https://github.com/tdhieu94/SmartKey/releases/latest). Windows và macOS tự cập nhật mỗi ngày; Linux báo khi có bản mới.
+
+**Phát hành bản mới:** tăng `MARKETING_VERSION` trong `project.yml`, rồi `git tag v<version> && git push origin v<version>`. GitHub Actions build cả ba hệ điều hành, ký bản cập nhật (secret `SPARKLE_ED_KEY`) và đăng release kèm `appcast.xml` / `release.json`.
+
+---
+
+## Vikey (upstream)
 
 Vietnamese typing for macOS, Windows, Linux, iOS and Android that switches between Vietnamese and English for you.
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component>
   <name>org.freedesktop.IBus.Vikey</name>
-  <description>Vikey - Vietnamese input with automatic English/Vietnamese switching</description>
+  <description>SmartKey - Vietnamese input with automatic English/Vietnamese switching</description>
   <exec>@CMAKE_INSTALL_FULL_LIBEXECDIR@/ibus-engine-vikey --ibus</exec>
   <version>@VIKEY_VERSION@</version>
   <author>Tony Dinh</author>
   <license>GPL-3.0</license>
-  <homepage>https://vikey.app</homepage>
+  <homepage>https://github.com/tdhieu94/SmartKey</homepage>
   <textdomain>vikey</textdomain>
   <engines>
     <engine>
@@ -16,8 +16,8 @@
       <author>Tony Dinh</author>
       <icon>vikey</icon>
       <layout>default</layout>
-      <longname>Vikey</longname>
-      <description>Vikey - Gõ tiếng Việt, tự chuyển Anh/Việt</description>
+      <longname>SmartKey</longname>
+      <description>SmartKey - Gõ tiếng Việt, tự chuyển Anh/Việt</description>
       <rank>99</rank>
       <symbol>V</symbol>
       <setup>@CMAKE_INSTALL_FULL_BINDIR@/vikey-settings</setup>

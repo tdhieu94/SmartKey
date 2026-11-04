@@ -16,12 +16,12 @@ BEGIN
     BLOCK "040904b0"
     BEGIN
       VALUE "CompanyName", "Tony Dinh"
-      VALUE "FileDescription", "Vikey - Vietnamese typing"
+      VALUE "FileDescription", "SmartKey - Vietnamese typing"
       VALUE "FileVersion", VIKEY_VERSION
-      VALUE "InternalName", "Vikey"
+      VALUE "InternalName", "SmartKey"
       VALUE "LegalCopyright", "GPL-3.0. Based on OpenKey by Tuyen Mai."
-      VALUE "OriginalFilename", "Vikey.exe"
-      VALUE "ProductName", "Vikey"
+      VALUE "OriginalFilename", "SmartKey.exe"
+      VALUE "ProductName", "SmartKey"
       VALUE "ProductVersion", VIKEY_VERSION
     END
   END

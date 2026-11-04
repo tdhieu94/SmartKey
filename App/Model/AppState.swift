@@ -56,5 +56,5 @@ final class AppState: ObservableObject {
 }
 
 extension Notification.Name {
-    static let VikeyLanguageDidChange = Notification.Name(rawValue: "VikeyLanguageDidChange")
+    static let VikeyLanguageDidChange = Notification.Name(rawValue: "SmartKeyLanguageDidChange")
 }
