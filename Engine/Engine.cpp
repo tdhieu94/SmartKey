@@ -1626,7 +1626,9 @@ static int asStatesWithDrops(Uint32* full, const int& maxN) {
     return n;
 }
 
+static bool _asRestoreUnknown = false;   //the last restore check said yes for a word in neither list (a typo, D62)
 static bool asShouldRestoreToEnglishCore() {
+    _asRestoreUnknown = false;
     if (!asEnabled() || !_asWordStartOk) return false;
     asInitLetters();
     if (_stateIndex < 2 || _stateIndex < _index) return false;
@@ -1731,6 +1733,7 @@ static bool asShouldRestoreToEnglishCore() {
         checkSpelling(true);
         bool invalid = tempDisableKey;
         tempDisableKey = savedTemp;
+        _asRestoreUnknown = invalid;
         return invalid;
     }
 #else
@@ -1843,6 +1846,16 @@ static void asRestoreToEnglish(const int& handleCode) {
     _index = _stateIndex;
     _asPrevCount = 0;
     vAutoSwitchRequest = 0;
+}
+
+/** D62: a word in neither list (no Vietnamese syllable, no English word) is most often a Vietnamese typo
+ *  ("taijq", "noiwps"): put the keys back but stay in Vietnamese, so the next words aren't typed in English.
+ *  Backspace right after still gives the word as it was (the platforms' auto-fix undo). */
+int vAutoSwitchTypoStaysVietnamese = 1;
+static void asStayVietnamese() {
+    if (!vAutoSwitchTypoStaysVietnamese) return;
+    vAutoSwitchRequest = -1;
+    vAutoFixTypoDone = 1;
 }
 
 /** Break keys that end a word for auto switch (not arrows, tab, esc, mouse or shortcuts). */
@@ -2307,7 +2320,8 @@ void vKeyHandleEvent(const vKeyEvent& event,
         //("zẻo" space "(" gave "zzero(", D53; same as the hyphen in D52)
         bool switchBreak = asIsSwitchBreak(event, data, capsStatus, otherControlKey) && _spaceCount == 0;
         bool english = switchBreak && asShouldRestoreToEnglish();
-        bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english);   //a Telex typo: the word one key away (D60)
+        bool unknownWord = english && _asRestoreUnknown;
+        bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english && !unknownWord);   //a Telex typo: the word one key away (D60)
         bool asSwitch = !typoFixed && (english ||
                         (data == KEY_MINUS && capsStatus != 1 && !otherControlKey && _spaceCount == 0 && asHyphenRestore()));   //a hyphen after a space isn't part of the word ("wr -" gave "wr wr-", D52)
         _asApostrophe = false;
@@ -2315,6 +2329,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
             //a Telex typo: the word one key away (D60)
         } else if (asSwitch) {
             asRestoreToEnglish(vRestoreAndStartNewSession); //auto switch: an English word typed in Vietnamese mode
+            if (unknownWord) asStayVietnamese();
         } else if (vRestoreIfWrongSpelling && isWordBreak(event, state, data)) { //restore key if wrong spelling with break-key
             if (!tempDisableKey && vCheckSpelling) {
                 checkSpelling(true); //force check spelling
@@ -2355,10 +2370,12 @@ void vKeyHandleEvent(const vKeyEvent& event,
             checkSpelling(true); //force check spelling
         }
         bool english = asShouldRestoreToEnglish();
-        if (asFixTypo(vRestore, english)) { //a Telex typo: the word one key away (D60)
+        bool unknownWord = english && _asRestoreUnknown;
+        if (asFixTypo(vRestore, english && !unknownWord)) { //a Telex typo: the word one key away (D60)
             _spaceCount++;
         } else if (english) { //auto switch: an English word typed in Vietnamese mode
             asRestoreToEnglish(vRestore);
+            if (unknownWord) asStayVietnamese();
             _spaceCount++;
         } else if (vRestoreIfWrongSpelling && tempDisableKey) { //restore key if wrong spelling
             if (!checkRestoreIfWrongSpelling(vRestore)) {

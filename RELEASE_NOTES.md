@@ -1,2 +1,3 @@
-- Windows: cảnh báo khi UniKey, EVKey, OpenKey, Vikey... đang chạy cùng lúc (hai bộ gõ cùng xử lý phím làm chữ bị sai: từ không được bỏ dấu, từ bị xoá)
-- Logo trong cửa sổ cài đặt và hướng dẫn trên Windows, Linux đổi thành SmartKey
+- Gõ nhầm một từ (không phải tiếng Việt, cũng không phải tiếng Anh) không còn làm SmartKey chuyển sang tiếng Anh: từ đó giữ nguyên phím đã gõ, các từ sau vẫn có dấu
+- Những từ gõ nhầm như vậy cũng được tự sửa: bajnn → bạn
+- Bấm Backspace ngay sau đó để lấy lại chữ như lúc gõ

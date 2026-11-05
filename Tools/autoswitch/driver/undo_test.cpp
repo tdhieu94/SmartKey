@@ -27,6 +27,8 @@ int main() {
         {"laapj rtinhf ", "lập trình ", "a Telex typo is fixed at the space (D60)"},
         {"laapj rtinhf <", "lập rtinhf", "Backspace right after puts the typed keys back (D60)"},
         {"laapj rtinhf < vieen ", "lập rtinhf viên ", "and they stay (D60)"},
+        {"taijq nhes ", "taijq nhé ", "a typo in neither list: kept as typed, Vietnamese stays on (D62)"},
+        {"taijq <", "tạiq", "Backspace right after gives back what Telex showed (D62)"},
         {"heelo!vieejt", "hêloviệt", "a click on a word put back to its keys: the next word gets Telex (was vieejt)"},
     };
     int fails = 0;

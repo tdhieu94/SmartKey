@@ -5,6 +5,21 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 62. A typo doesn't switch to English
+
+**Status:** Built 2026-11-05. Asked by Hieu: "phần mềm đôi khi tự động chuyển sang tiếng Anh, mỗi lần như vậy tôi lại phải chuyển sang tiếng Việt".
+
+**Cause.** A word that is neither a Vietnamese syllable nor in the English list ("taijq") was read as a foreign word (D8.2, D10): put back to the keys typed, and Vikey switched to English. For someone who types fast most such words are Vietnamese typos, and every one of them left the next words without marks.
+
+**Decided.**
+- Such a word is still put back to the keys typed, but Vietnamese stays on. Backspace right after gives back what Telex showed (D20 undo). Known English words switch as before.
+- It also gets the D60 typo fix like any Vietnamese word (there is no English word to protect): "bajnn" → "bạn". Code names (chdir) stay as typed: D60's own guards.
+- `vAutoSwitchTypoStaysVietnamese` (on); no setting yet.
+
+**Measured.** Realistic typing unchanged (typo 561 → 557 needing a hand fix, no message broken). Goldens: "nos" → "nó", "char" → "chả" in Vietnamese sentences; chat_typos expects 2 more fixed typos ("bajnn", "nuexa"), so its manual count is 77 → 79 like D60. Telex undo of triple vowels ("cuooocf") now stays Vietnamese.
+
+**Locked by:** rules D62 (3 cases); D8.2, D10, D27, D53 foreign-word cases now end in Vietnamese; undo_test (taijq).
+
 ## 61. SmartKey: own name, releases and updates on GitHub
 
 **Status:** Built 2026-11-04. Asked by Hieu: "đưa lên github repo Smartkey và phát hành release để cài đặt, và cho tự động cập nhật".

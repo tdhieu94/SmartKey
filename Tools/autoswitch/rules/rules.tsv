@@ -48,14 +48,14 @@ D8.1	0	check mail cos theer 	check mail có thể 	1	look-back the other way: co
 D8.1	0	nos theer 	nó thể 	1	look-back the other way: nos -> nó
 D8.1	0	cors gif 	có gì 	1	look-back: the common Vietnamese phrase wins
 D8.1	1	carm own 	cảm ơn 	1	EN start: carm converts, then own types ơn
-D8.2	1	cais testflight build 	cái testflight build 	0	unknown foreign word (not Vietnamese, not in the English list) restores + English
+D8.2	1	cais testflight build 	cái testflight build 	1	unknown foreign word (not Vietnamese, not in the English list) restores; stays Vietnamese since D62 (most such words are typos)
 D8.2	1	analytics dashboard 	analytics dashboard 	0	unknown foreign word restores
 D8.2	1	getSmartSwitchKeySaveDataFromApp 	getSmartSwitchKeySaveDataFromApp 	0	32 keys, the most the engine keeps: still restores
 D8.2	1	getSmartSwitchKeySaveDataFromApps 	gétmartSwitchKeySaveDataFromApps 	1	33+ keys: the first ones are gone, so the word stays as Telex made it (restoring lost its g, or typed it twice: #13)
 D8.2	1	windowsSubsystemForLinuxSettings 	ưindowsSubsystemForLinuxSettings 	1	32 letters on screen: more than the apps delete in one go, so it stays (was typed twice on Mac, Windows, Linux)
 D9	1	tooi thicsh lanwm 	tôi thích lanwm 	1	Vietnamese typo (has ă/â/ơ/ư/đ marks) never switches the language (shown as typed keys: D10 restore-if-invalid is on)
 D10	1	bieeqk 	bieeqk 	1	an invalid word is kept as typed keys without switching (restore-if-invalid, on by default); stays Vietnamese (was khoongg: D60 now fixes it to không)
-D10	1	windoows 	windoows 	0	a multi-syllable invalid word counts as a foreign word: kept as typed, switches to English
+D10	1	windoows 	windoows 	1	a multi-syllable invalid word counts as a foreign word: kept as typed; stays Vietnamese (D62)
 D10	1	x.getSmartSwitchKeySaveDataFromApps 	x.gétmartSwitchKeySaveDataFromApps 	1	restore-if-invalid has the same limit (was x.etSmartSwitch...)
 D13	1	this makes 	this makes 	0	an English-only word right after an ambiguous one ("thí") switches at once and fixes it (Tony)
 D13	1	tooi thaays bee app bij loix 	tôi thấy bê app bị lõi 	1	Vietnamese followed by a tech word does not switch (the earlier word is not ambiguous enough)
@@ -96,7 +96,7 @@ D23	1	now-ron 	nơ-ron 	1	Vietnamese loanword syllables with hyphens stay (nơ-r
 D23	0	TOOI DDI HOCJ 	TÔI ĐI HỌC 	1	EN mode, Caps Lock Vietnamese: inside a run of capitals, all-caps words convert to common syllables
 D23	0	USA EST 	USA EST 	0	all-caps English or rare readings never convert
 D23	0	HW 	HW 	0	a lone all-caps word (not in a run of capitals) never converts
-D27	1	deepseek 	deepseek 	0	a foreign word restored as typed gets back the keys Telex undid on the way (not deepsek)
+D27	1	deepseek 	deepseek 	1	a foreign word restored as typed gets back the keys Telex undid on the way (not deepsek); stays Vietnamese (D62)
 D27	1	DeepSeek 	DeepSeek 	0	same with capitals
 D27	1	web(	web(	0	"(" right after a word ends it
 D27	1	ddc 	đc 	1	đ shorthand (đc, đt, đk) is Vietnamese (chat frequencies)
@@ -147,7 +147,7 @@ D53	1	zero 	zero 	0	not a teencode word: an English word stays English ("zẻo" 
 D53	1	the zoo 	the zoo 	0	a tie in English context stays English
 D53	1	ddi zoo ddaay 	đi zô đây 	1	the same tie in Vietnamese context is teencode
 D53	1	look 	look 	0	k only after i or ư: look never becomes lôk
-D53	1	oxy 	oxy 	0	oy only with huyền: oxy stays
+D53	1	oxy 	oxy 	1	oy only with huyền: oxy stays (and Vietnamese stays on, D62)
 D57	1	vieejt.<nam 	vieetjnam 	1	Backspace over punctuation brings back the word with its keys: nothing typed before is lost
 D57	1	too.<b 	toob 	1	the restored word keeps its letters when the next word restores
 D57	1	vieejt.< nam 	việt nam 	1	Backspace over punctuation, then a space: the word stays
@@ -169,3 +169,6 @@ D60	1	looi 	lôi 	1	a real word is never changed (even when another was meant)
 D60	1	href chdir dwords ctor cfgs 	href chdir dwords ctor cfgs 	1	code: English words with consonants stuck on are left alone
 D60	1	obj.rtinhf my_tooin 	obj.rtinhf my-tooin 	1	identifiers inside foo.bar and my_var are left alone
 D60	1	tmp src impl args ptr func len buf 	tmp src impl args ptr func len buf 	0	common code abbreviations are left alone
+D62	1	taijq nhes 	taijq nhé 	1	a typo in neither list is kept as typed but Vietnamese stays on: the next word gets its marks
+D62	1	bajnn ddi ddaau 	bạn đi đâu 	1	a typo in neither list gets the D60 fix too (no English word to protect)
+D62	1	code chdir xong 	code chdir xong 	1	code names in neither list stay as typed, without a fix
