@@ -172,3 +172,9 @@ D60	1	tmp src impl args ptr func len buf 	tmp src impl args ptr func len buf 	0	
 D62	1	taijq nhes 	taijq nhé 	1	a typo in neither list is kept as typed but Vietnamese stays on: the next word gets its marks
 D62	1	bajnn ddi ddaau 	bạn đi đâu 	1	a typo in neither list gets the D60 fix too (no English word to protect)
 D62	1	code chdir xong 	code chdir xong 	1	code names in neither list stay as typed, without a fix
+D63	1	duwj ddosn truwowcs 	dự đoán trước 	1	a key left out: the D60 fix that fits after the word before (dự đoán, not dự đón)
+D63	1	cuxng trong ngafy goom qua 	cũng trong ngày hôm qua 	1	a real word typed by mistake (gôm) is fixed once the next word shows it doesn't fit (hôm qua)
+D63	1	bajn cos thowf gian 	bạn có thời gian 	1	a key left out of a real word (thờ): both neighbours say thời
+D63	1	tooif teej 	tồi tệ 	1	a word real text has next to its neighbours stays (no before word: nothing to compare)
+D63	1	caauf loong laf 	cầu lông là 	1	one neighbour alone never fixes a word (lông stays, not ông)
+D63	1	ddi trongj soos 	đi trọng số 	1	a fix that only changes the tone is never made (trọng stays, not trong)

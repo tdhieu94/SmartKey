@@ -15,7 +15,7 @@ Mình test api trên postman, response time hơi lâu	Mình test api trên postm
 Team deploy lúc 3h chiều, ai còn PR chưa review thì nhắn sớm	Team deploy lúc 3h chiều, ai còn PR chưa review thì nhắn sớm
 Có lỗi gì trên staging không? Mình đã push version 2.1	Có lỗi gì trên staging không? Mình đã push version 2.1
 Testing notification feature, nó work nhưng animation hơi lag	Testing notification feature, nó work nhưng animation hơi lag
-Guys, cách làm cache invalidation ở project này ngư thế nào?	Guys, cách làm cache invalidation ở project này ngư thế nào?
+Guys, cách làm cache invalidation ở project này như thế nào?	Guys, cách làm cache invalidation ở project này ngư thế nào?
 Deploy production được không, hay chờ thêm vài PR nữa?	Deploy production được không, hay chờ thêm vài PR nữa?
 Mình refactor code auth, complexity giảm đáng kể, xem giúp	Mình refactor code auth, complexity giảm đáng kể, xem giúp
 Standup xong rồi, ai làm cái task reset password không?	Standup xong rồi, ai làm cái task reset password không?
@@ -321,7 +321,7 @@ Ba điện thoại, bảo tuần sau sẽ bonus, có thể đi chơi được r�
 Chị, có thể giúp em check lại bài tiếng Anh không? Em sợ sai nhiều lắm	Chị, có thể giúp em check lại bài tiếng Anh không? Em sợ sai nhiều lắm
 Let's do a family video call this Sunday, okay everyone?	Let's do a family video call this Sunday, okay everyone?
 Meh nói là anh cần đi học lái xe, bao giờ anh có time?	Meh nói là anh cần đi học lái xe, bao giờ anh có time?
-Em muốn mua cái laptop mới, giá jhoangr 12 triệu, mẹ có thể hỗ trợ không?	Em muốn mua cái laptop mới, giá jhoangr 12 triệu, mẹ có thể hỗ trợ không?
+Em muốn mua cái laptop mới, giá khoảng 12 triệu, mẹ có thể hỗ trợ không?	Em muốn mua cái laptop mới, giá khoảng 12 triệu, mẹ có thể hỗ trợ không?
 Ai có thể giúp ba setup cái máy tính mới không? Ba không hiểu	Ai có thể giúp ba setup cái máy tính mới không? Ba không hiểu
 Tối nay có ai xem bóng đá không? Việt Nam vs Thái Lan mà	Tối nay có ai xem bóng đá không? Việt Nam vs Thái Lan mà
 Mẹ bảo tuần tới có nhà hàng ăn tối, ai muốn đi cùng?	Mẹ bảo tuần tới có nhà hàng ăn tối, ai muốn đi cùng?
@@ -370,7 +370,7 @@ I really should have started this earlier instead of procrastinating	I really sh
 Ai có thể push code lên repo cho em không, em máy tính bị die	Ai có thể push code lên repo cho em không, em máy tính bị die
 Mình submit rồi nhưng chưa chắc đings jeest, chắc fail	Mình submit rồi nhưng chưa chắc đings jeest, chắc fail
 Thời gian thôi, phải priority cái assignment này trước đã	Thời gian thôi, phải priority cái assignment này trước đã
-Đọc requirements mà em vaazn confused, có khi nào requirements sai không	Đọc requirements mà em vaazn confused, có khi nào requirements sai không
+Đọc requirements mà em vẫn confused, có khi nào requirements sai không	Đọc requirements mà em vẫn confused, có khi nào requirements sai không
 Bạn có template nào không, em dùng để start code nhanh hơn	Bạn có template nào không, em dùng để start code nhanh hơn
 Lát minute gang, em mới dậy lúc 11:30 và deadline 11:59pm	Last minute gang, em mới dậy lúc 11:30 và deadline 11:59pm
 Check lại bài em xem có được không, em nhất định sợ fail	Check lại bài em xem có được không, em nhất định sợ fail
@@ -777,7 +777,7 @@ từ lần trước order bánh mì tô, nó bao giờ giao ổn định ko ba	t
 anh yêu cơm chiên tôm nhiều lắm, lần này order thêm một phần nữa	anh yêu cơm chiên tôm nhiều lắm, lần này order thêm một phần nữa
 I'm thinking about trying that new Korean restaurant downtown, anyone been there?	I'm thinking about trying that new Korean restaurant downtown, anyone been there?
 foji gaff chiên chili salt từ quán mgoafi kia, mấy đứa khác ăn mà khen lắm	foji gaf chiên chili salt từ quán mgoafi kia, mấy đứa khác ăn mà khen lắm
-sao delivery fee nắt gạo tjees, giao cái order 50k mà tính phí 15k	sao delivery fee nắt gạo tjees, giao cái order 50k mà tính phí 15k
+sao delivery fee nắt gạo tjees, giao cái order 50k mà tính phí 15k	sao delivery fee nắt gạo thế, giao cái order 50k mà tính phí 15k
 cơm tấm sườn chuối chiên là đặc sản quê mình, mua ở chỗ nào ở đây	cơm tấm sườn chuối chiên là đặc sản quê mình, mua ở chỗ nào ở đây
 vừa check app Shopee Food, giá rẻ hơn Grab, giảm 40  từ nay	vừa check app Shopee Food, giá rẻ hơn Grab, giảm 40  từ nay
 mình định order bubble tea, các bạn muốn uống cái gì	mình định order bubble tea, các bạn muốn uống cái gì
@@ -823,7 +823,7 @@ Tottenham bao giờ mới vô chung kết, năm nay chắc cũng không	Tottenha
 Kane à, ổn lắm nhưng phòng ngự của Tottenham tệ vãi	Kane à, ổn lắm nhưng phòng ngự của Tottenham tệ vãi
 ticket xem trực iếp bao nhiêu tiền bây giờ, muốn đi Hàng Đẫy xem một lần	ticket xem trực iếp bao nhiêu tiền bây giờ, muốn đi Hàng Đẫy xem một lần
 Vé xem chung kết có tới 500 triệu, chỉ là cái ghế ngồi phía sau	Vé xem chung kết có tới 500 triệu, chỉ là cái ghế ngồi phía sau
-Sao vây giờ mà vé lại tốn kém thế, xem nhà tiện hơn và có bể	Sao vây giờ mà vé lại tốn kém thế, xem nhà tiện hơn và có beer
+Sao bây giờ mà vé lại tốn kém thế, xem nhà tiện hơn và có bể	Sao vây giờ mà vé lại tốn kém thế, xem nhà tiện hơn và có beer
 Ông Hiddink đó, coi như là bố của bóng dfas Việt Nam luôn	Ông Hiddink đó, coi như là bố của bóng dfas Việt Nam luôn
 Park Hang-seo cũng làm việc hay lắm, chỉ tiếc là đã rời đi	Park Hang-seo cũng làm việc hay lắm, chỉ tiếc là đã rời đi
 Bóng đá Việt Nam hiện tại thiếu cái gì... à thiếu những cầu thủ giỏi	Bóng đá Việt Nam hiện tại thiếu cái gì... à thiếu những cầu thủ giỏi
@@ -966,7 +966,7 @@ The webhook integration isn't working properly, getting 500 errors from the thir
 vừa rebase feature branch lên latest develop, conflict ở 4 files	vừa rebase feature branch lên latest develop, conflict ở 4 files
 ai setup local environment xong chưa? docker-compose up có issue gì không	ai setup local environment xong chưa? docker-compose up có issue gì không
 Guys we need to hotfix production ASAP, user data is getting corrupted	Guys we need to hotfix production ASAP, user data is getting corrupted
-mình deploy build 2.5.1 vào staging lúc 2 giờ choeeuf	mình deploy build 2.5.1 vào staging lúc 2 giờ choeeuf
+mình deploy build 2.5.1 vào staging lúc 2 giờ choeeuf	mình deploy build 2.5.1 vào staging lúc 2 giờ chiều
 Has anyone tested the new cache layer? Performance looks good from my end	Has anyone tested the new cache layer? Performance looks good from my end
 bọn tôi discover bug ở notification service, message không gửi được khi offline	bọn tôi discover bug ở notification service, message không gửi được khi offline
 The database indexes need optimization, queries are running slow in production	The database indexes need optimization, queries are running slow in production
@@ -1058,7 +1058,7 @@ Mình nghĩ 2 phòng là tốt nhất, mỗi phòng 2-3 người
 2 	Mình nghĩ 2 phòng là tốt nhất, mỗi phòng 2-3 người
 2 
 phòng thì sẽ hơi đắt, tất cả cộng lại bao nhiêu?	phòng thì sẽ hơi đắt, tất cả cộng lại bao nhiêu?
-Nếu mỗi phomgf 480k thì 4 đêm là gần 4 triệu, chia 5 người là khoảng 800k/người	Nếu mỗi phomgf 480k thì 4 đêm là gần 4 triệu, chia 5 người là khoảng 800k/người
+Nếu mỗi phòng 480k thì 4 đêm là gần 4 triệu, chia 5 người là khoảng 800k/người	Nếu mỗi phòng 480k thì 4 đêm là gần 4 triệu, chia 5 người là khoảng 800k/người
 That sounds reasonable. When should we book? Prices might go up closer to the date.	That sounds reasonable. When should we book? Prices might go up closer to the date.
 Book luôn hôm nay đi, mình sợ hết phòng	Book luôn hôm nay đi, mình sợ hết phòng
 Được, mình vừa add card vào Booking, ready to book anytime	Được, mình vừa add card vào Booking, ready to book anytime
@@ -1261,7 +1261,7 @@ Không cần, mẹ đã mua rồi, toàn cá tươi đây	Không cần, mẹ đ�
 Vậy con không cần lo, mẹ đã sắp xếp hết	Vậy con không cần lo, mẹ đã sắp xếp hết
 Con gái ơi, đạo này tiền điện tăng lên quá, nhà mình tiêu bao nhiêu vậy?	Con gái ơi, đạo này tiền điện tăng lên quá, nhà mình tiêu bao nhiêu vậy?
 Bố, nhà mình dùng air con 24/24, nên tiêu nhiều thôi	Bố, nhà mình dùng air con 24/24, nên tiêu nhiều thôi
-Sao phải bật cả ngày vậy? Cắt ggiamr đi, chỉ bật lúc nóng thôi	Sao phải bật cả ngày vậy? Cắt ggiamr đi, chỉ bật lúc nóng thôi
+Sao phải bật cả ngày vậy? Cắt giảm đi, chỉ bật lúc nóng thôi	Sao phải bật cả ngày vậy? Cắt giảm đi, chỉ bật lúc nóng thôi
 Dạ bố, con ssex để ý	Dạ bố, con ssex để ý
 Thằng em nhỏ còn ở nhà hôm nay không? Nó đi học thêm gì đó	Thằng em nhỏ còn ở nhà hôm nay không? Nó đi học thêm gì đó
 Em nó đi học online tiếng Anh, 6h tối mới xong	Em nó đi học online tiếng Anh, 6h tối mới xong
@@ -1312,7 +1312,7 @@ Tớ thêm cái testing file nhé, vì requirement yêu cầu test case phải c
 That's a lot, normally we just need 50 	That's a lot, normally we just need 50 
 Yeah but this prof is very strict about quality	Yeah but this prof is very strict about quality
 Mình thêm một số edge case vào, như empty list, single element, stuff like that	Mình thêm một số edge case vào, như empty list, single element, stuff like that
-Tốt rồi, thế là bao nhiêu files vào cuoodi cùng?	Tốt rồi, thế là bao nhiêu files vào cuoodi cùng?
+Tốt rồi, thế là bao nhiêu files vào cuối cùng?	Tốt rồi, thế là bao nhiêu files vào cuối cùng?
 Khoảng 5-6 files: main.cpp, queue.h, linkedlist.h, test.cpp, và mấy file support khác	Khoảng 5-6 files: main.cpp, queue.h, linkedlist.h, test.cpp, và mấy file support khác
 OK sounds good, I'll start coding this afternoon	OK sounds good, I'll start coding this afternoon
 Tớ cũng vậy, giờ tớ review lại specification trước	Tớ cũng vậy, giờ tớ review lại specification trước
@@ -1335,7 +1335,7 @@ May mà không, sau 10 phút server lên lại, tớ submit được kịp	May m
 Thế may mắn quá, lần sau không nên chờ kỹ thế	Thế may mắn quá, lần sau không nên chờ kỹ thế
 Ừ, tớ học được bài học rồi, sẽ submit sớm hơn	Ừ, tớ học được bài học rồi, sẽ submit sớm hơn
 Thế tuần sau khi nào tụi mình debrief về assignment này không?	Thế tuần sau khi nào tụi mình debrief về assignment này không?
-Sau khi grades ra sẽ nói, giờ tạp trung làm đã	Sau khi grades ra sẽ nói, giờ tạp trung làm đã
+Sau khi grades ra sẽ nói, giờ tập trung làm đã	Sau khi grades ra sẽ nói, giờ tạp trung làm đã
 OK let's get this done	OK let's get this done
 Chị ơi, cái design này bị sao vậy, sao nó lệch lệch thế	Chị ơi, cái design này bị sao vậy, sao nó lệch lệch thế
 Figma lag quá, mở file cứ bị crash liên tục	Figma lag quá, mở file cứ bị crash liên tục
@@ -1709,7 +1709,7 @@ AI tools ngày càng khiến marketing dễ dàng hơn, đúng không?	AI tools 
 Yeah, automation là tương lai của marketing, ChatGPT leading the way	Yeah, automation là tương lai của marketing, ChatGPT leading the way
 Mình sợ mấy thằng job marketer sẽ mất việc vì AI	Mình sợ mấy thằng job marketer sẽ mất việc vì AI
 Không sợ được, skill gì mà AI replace? Nó chỉ helper thôi	Không sợ được, skill gì mà AI replace? Nó chỉ helper thôi
-Nhưng strategic thinking và creativity nó làn được mà, tớ sợ thật	Nhưng strategic thinking và creativity nó làn được mà, tớ sợ thật
+Nhưng strategic thinking và creativity nó làm được mà, tớ sợ thật	Nhưng strategic thinking và creativity nó làn được mà, tớ sợ thật
 Tớ đang test các AI tools khác nữa, Claude, Gemini, mấy cái gì đó	Tớ đang test các AI tools khác nữa, Claude, Gemini, mấy cái gì đó
 Chất lượng của Claude hơi tốt hơn ChatGPT cho viết dài	Chất lượng của Claude hơi tốt hơn ChatGPT cho viết dài
 Mình dùng ChatGPT API trong ứng dụng của công ty, pretty powerful stuff	Mình dùng ChatGPT API trong ứng dụng của công ty, pretty powerful stuff
@@ -1773,7 +1773,7 @@ shipping fee đắt quá, tao quyết định mua hàng trong siêu thị rồi	
 mấy ông thích ăn buffet hay à la carte hơn	mấy ông thích ăn buffet hay à la carte hơn
 tớ order rồi, nó đang prep, khoảng 15 phút nữa là giao	tớ order rồi, nó đang prep, khoảng 15 phút nữa là giao
 the payment method is not working, can you try another card	the payment method is not working, can you try another card
-tao ăn phở đã 3 ngày liên tieesp ròi, muốn ddpori một cái gì đó mới	tao ăn phở đã 3 ngày liên tieesp ròi, muốn đpori một cái gì đó mới
+tao ăn phở đã 3 ngày liên tieesp ròi, muốn đổi một cái gì đó mới	tao ăn phở đã 3 ngày liên tieesp ròi, muốn đổi một cái gì đó mới
 quán nì có promo vào chiều thứ 3, mình nhớ gọi ngày hôm ddos	quán nì có promo vào chiều thứ 3, mình nhớ gọi ngày hôm ddos
 mặc dù giao muộn nhưng thức ăn còn nóng, khá ổn	mặc dù giao muộn nhưng thức ăn còn nóng, khá ổn
 i'm checking the menu right now, let me see what looks good	i'm checking the menu right now, let me see what looks good
@@ -1784,7 +1784,7 @@ mình cancel order được không, vì tớ thấy quán không đặt đúng y
 Tối nay có trận Man City vs Liverpool mà, mấy bạn xem không?	Tối nay có trận Man City vs Liverpool mà, mấy bạn xem không?
 Watch it on K  bro, quality nó tốt lắm	Watch it on K  bro, quality nó tốt lắm
 Tao đặt cược cho City thắng 2-1, ai đó chơi cùng không?	Tao đặt cược cho City thắng 2-1, ai đó chơi cùng không?
-Hahahaha Haaland sẽ lại ghi bàn thôi, chắc cjawns 100 	Hahahaha Haaland sẽ lại ghi bàn thôi, chắc cjawns 100 
+Hahahaha Haaland sẽ lại ghi bàn thôi, chắc chắn 100 	Hahahaha Haaland sẽ lại ghi bàn thôi, chắc chắn 100 
 Mày xem livestream ở đâu bây giờ? Lazi TV bị block rồi	Mày xem livestream ở đâu bây giờ? Lazi TV bị block rồi
 City's defense is shit this season honestly	City's defense is shit this season honestly
 À mà Pep Guardiola kỳ lạ vl, cứ thay đổi formation mãi	À mà Pep Guardiola kỳ lạ vl, cứ thay đổi formation mãi
@@ -1880,7 +1880,7 @@ Hmm, giá phí thì ok, xhur yếu là chưa biết lên loan hay không	Hmm, gi
 Mình cps thể giúp bạn kết nối với mortgage advisor, họ có tỷ lệ rất tốt	Mình cps thể giúp bạn kết nối với mortgage advisor, họ có tỷ lệ rất tốt
 Được, cho mình contact info của họ đi	Được, cho mình contact info của họ đi
 Để mình send link cho bạn, họ respond nhanh lắm. Usually within 24 hours	Để mình send link cho bạn, họ respond nhanh lắm. Usually within 24 hours
-Cảm ơn nhé. Còn vấn đè nữa là mình đang bận việc công ty, full schedule	Cảm ơn nhé. Còn vấn đè nữa là mình đang bận việc công ty, full schedule
+Cảm ơn nhé. Còn vấn đề nữa là mình đang bận việc công ty, full schedule	Cảm ơn nhé. Còn vấn đè nữa là mình đang bận việc công ty, full schedule
 Không sao, mình có thể arrange virtual tour cho bạn trước, xem video 360 trước	Không sao, mình có thể arrange virtual tour cho bạn trước, xem video 360 trước
 Video tour? Sao không face time luôn cho nhanh	Video tour? Sao không face time luôn cho nhanh
 Được, mình có video tour link, send cho bạn link nè: bit.ly/landmark81-tour	Được, mình có video tour link, send cho bạn link nè: bit.ly/landmark81-tour
