@@ -1319,8 +1319,13 @@ static AsWord _asPrev[AS_LOOKBACK_WORDS];
 static int _asPrevCount = 0;
 static Uint32 _asConverted[MAX_BUFF]; static int _asConvertedN = 0;   //the word auto switch just put in Vietnamese
 
+struct AsRwPrev { bool valid = false; Uint32 keys[AS_KEY_LEN]; int n, shown, typed, before; };   //word ids in the context table
+static AsRwPrev _rwPrev;   //D63: the word before the current one, for a second look (asFixPreviousWord)
+void vAutoFixForgetPrevious();
+static int _ctxPrev = -1;   //D63: the word before the current one (its id in the context table), for typo fixes (see asContextBonus)
 void vAutoSwitchForget() {
     _asPrevCount = 0;
+    _ctxPrev = -1; vAutoFixForgetPrevious();
     _asWordStartOk = true;   //a fresh context (language switched, app changed): the next word stands on its own
     _spaceCount = 0; _specialChar.clear(); _typingStates.clear();   //and Backspace can't reopen a word from before it
     if (_asConvertedN > 0) {   //except the word auto switch just turned Vietnamese: it is on screen before the break key,
@@ -1461,7 +1466,10 @@ static std::string asUtf8(const Uint16* t, int n) {
 static bool asSurface(const char* letters, const bool& vietnamese, std::string& out) {
     if (!vietnamese) { out = letters; return true; }
     Uint16 t[64]; int n = 0;
-    if (vAutoSwitchWordScore(1, letters, t, &n) <= AS_MISSING || n <= 0) return false;
+    int done = vAutoFixTypoDone;   //the reading types the keys through the engine, which clears this
+    int score = vAutoSwitchWordScore(1, letters, t, &n);
+    vAutoFixTypoDone = done;
+    if (score <= AS_MISSING || n <= 0) return false;
     out = asUtf8(t, n); return true;
 }
 // Triples (D34, experiment): the two words before. Loaded at run time for now; off when not loaded.
@@ -1626,7 +1634,9 @@ static int asStatesWithDrops(Uint32* full, const int& maxN) {
     return n;
 }
 
+static bool _asRestoreUnknown = false;   //the last restore check said yes for a word in neither list (a typo, D62)
 static bool asShouldRestoreToEnglishCore() {
+    _asRestoreUnknown = false;
     if (!asEnabled() || !_asWordStartOk) return false;
     asInitLetters();
     if (_stateIndex < 2 || _stateIndex < _index) return false;
@@ -1731,6 +1741,7 @@ static bool asShouldRestoreToEnglishCore() {
         checkSpelling(true);
         bool invalid = tempDisableKey;
         tempDisableKey = savedTemp;
+        _asRestoreUnknown = invalid;
         return invalid;
     }
 #else
@@ -1845,6 +1856,16 @@ static void asRestoreToEnglish(const int& handleCode) {
     vAutoSwitchRequest = 0;
 }
 
+/** D62: a word in neither list (no Vietnamese syllable, no English word) is most often a Vietnamese typo
+ *  ("taijq", "noiwps"): put the keys back but stay in Vietnamese, so the next words aren't typed in English.
+ *  Backspace right after still gives the word as it was (the platforms' auto-fix undo). */
+int vAutoSwitchTypoStaysVietnamese = 1;
+static void asStayVietnamese() {
+    if (!vAutoSwitchTypoStaysVietnamese) return;
+    vAutoSwitchRequest = -1;
+    vAutoFixTypoDone = 1;
+}
+
 /** Break keys that end a word for auto switch (not arrows, tab, esc, mouse or shortcuts). */
 static bool asIsSwitchBreak(const vKeyEvent& event, const Uint16& data, const Uint8& capsStatus, const bool& otherControlKey) {
     if (event != vKeyEvent::Keyboard || otherControlKey) return false;
@@ -1865,6 +1886,7 @@ struct AsEngineState {
     vector<Uint32> longWord, special, statesData;
     list<vector<Uint32>> typing;
     vKeyHookState hook;
+    int ctxPrev = -1; AsRwPrev rwPrev;   //D63: only the test snapshots (vTestSaveState) keep these: replays type no spaces
 };
 
 static void asSaveState(AsEngineState& st) {
@@ -1901,8 +1923,8 @@ static void asRestoreState(AsEngineState& st) {
 
 #ifdef AS_TESTING
 //test harness only: snapshot the whole engine so a word can be tried and taken back
-void* vTestSaveState() { AsEngineState* st = new AsEngineState(); asSaveState(*st); return st; }
-void vTestRestoreState(void* p) { AsEngineState* st = (AsEngineState*)p; asRestoreState(*st); delete st; }
+void* vTestSaveState() { AsEngineState* st = new AsEngineState(); asSaveState(*st); st->ctxPrev = _ctxPrev; st->rwPrev = _rwPrev; return st; }
+void vTestRestoreState(void* p) { AsEngineState* st = (AsEngineState*)p; asRestoreState(*st); _ctxPrev = st->ctxPrev; _rwPrev = st->rwPrev; delete st; }
 void vTestFreeState(void* p) { delete (AsEngineState*)p; }
 #endif
 
@@ -2148,9 +2170,201 @@ static bool asEnglishWithAffix(const char* w, int n) {
     return false;
 }
 
-struct AsTypoBest { char letters[AS_KEY_LEN]; int score; Uint32 shown[MAX_BUFF]; int shownCount; };
+// ---- Context for typo fixes (D63) ---------------------------------------------------------------------
+// The word before the one being fixed, as shown and lowercase ("dự"), and how often each fix follows it in real
+// text: "dự" + "dows" gives "đoán", not "đón". Empty after anything but a single space.
+#include "ContextData.h"
+/** Where each word's pairs start in kCtxPairs (sorted by the first word), built on first use. */
+static const unsigned int* asCtxPairStart() {
+    static unsigned int* start = NULL;
+    if (!start) {
+        start = new unsigned int[kCtxWordCount + 1];
+        unsigned int q = 0;
+        for (int id = 0; id <= kCtxWordCount; id++) {
+            while (q < (unsigned int)kCtxPairCount && (int)(kCtxPairs[q] >> 16) < id) q++;
+            start[id] = q;
+        }
+    }
+    return start;
+}
+/** The pair's index in kCtxPairs, or -1: a search within the first word's pairs only (a few cache lines). */
+static int asCtxPairIndex(int a, int b) {
+    if (a < 0 || b < 0 || a >= kCtxWordCount) return -1;
+    const unsigned int* start = asCtxPairStart();
+    unsigned int k = (unsigned int)a << 16 | (unsigned int)b;
+    const unsigned int* lo = kCtxPairs + start[a], *hi = kCtxPairs + start[a + 1];
+    const unsigned int* it = std::lower_bound(lo, hi, k);
+    return it != hi && *it == k ? (int)(it - kCtxPairs) : -1;
+}
+static double asCtxPair(int a, int b) {
+    int i = asCtxPairIndex(a, b);
+    return i >= 0 ? exp2(kCtxPairLog[i] / 8.0) : 1;   //below the table's minimum (5)
+}
+/** The word's index in kCtxWords, or -1 (a hash built on first use). */
+static int asCtxWordId(const std::string& w) {
+    enum { SIZE = 1 << 15 };
+    static int* table = NULL;
+    auto hash = [](const char* x) { unsigned h = 2166136261u; for (; *x; x++) h = (h ^ (unsigned char)*x) * 16777619u; return h & (SIZE - 1); };
+    if (!table) {
+        table = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) table[i] = -1;
+        for (int id = 0; id < kCtxWordCount; id++) {
+            unsigned h = hash(kCtxWords + kCtxWordOffsets[id]);
+            while (table[h] >= 0) h = (h + 1) & (SIZE - 1);
+            table[h] = id;
+        }
+    }
+    for (unsigned h = hash(w.c_str()); table[h] >= 0; h = (h + 1) & (SIZE - 1))
+        if (!strcmp(kCtxWords + kCtxWordOffsets[table[h]], w.c_str())) return table[h];
+    return -1;
+}
+/** Keys as a number (5 bits a letter, at most 12 letters), 0 when they don't fit. */
+static unsigned long long asCtxPack(const char* k, int skip = -1) {
+    unsigned long long v = 0; int n = 0;
+    for (int i = 0; k[i]; i++) {
+        if (i == skip) continue;
+        if (k[i] < 'a' || k[i] > 'z' || ++n > 12) return 0;
+        v = v << 5 | (unsigned long long)(k[i] - 'a' + 1);
+    }
+    return v;
+}
+/** Calls f(id, keys) for each table word that may be one slip from the keys "k": the words whose keys, or the keys
+ *  with one left out, are k or k with one left out (built on first use; swaps and substitutions meet on a deletion).
+ *  The words' keys are kept next to the entries, so looking at a candidate touches no other table. */
+struct AsCtxNear { unsigned long long del, full; int id; bool operator<(const AsCtxNear& o) const { return del < o.del || (del == o.del && id < o.id); } };
+template <class F> static void asCtxNearKeys(const char* k, F f) {
+    enum { SIZE = 1 << 17 };
+    static std::vector<AsCtxNear>* index = NULL;
+    static int* table = NULL;   //a hash of the keys: where their entries start in index
+    auto slot = [](unsigned long long v) { return (unsigned)((v * 0x9E3779B97F4A7C15ull) >> 47) & (SIZE - 1); };
+    if (!index) {
+        index = new std::vector<AsCtxNear>();
+        for (int id = 0; id < kCtxWordCount; id++) {
+            const char* w = kCtxWordKeys + kCtxWordKeyOffsets[id];
+            unsigned long long full = asCtxPack(w);
+            if (!full) continue;
+            int n = (int)strlen(w);
+            for (int skip = -1; skip < n; skip++) { unsigned long long v = asCtxPack(w, skip); if (v) index->push_back({v, full, id}); }
+        }
+        std::sort(index->begin(), index->end());
+        table = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) table[i] = -1;
+        for (int i = 0; i < (int)index->size(); i++) {
+            if (i > 0 && (*index)[i - 1].del == (*index)[i].del) continue;
+            unsigned h = slot((*index)[i].del);
+            while (table[h] >= 0) h = (h + 1) & (SIZE - 1);
+            table[h] = i;
+        }
+    }
+    int n = (int)strlen(k);
+    for (int skip = -1; skip < n; skip++) {
+        unsigned long long v = asCtxPack(k, skip);
+        if (!v) continue;
+        for (unsigned h = slot(v); table[h] >= 0; h = (h + 1) & (SIZE - 1)) {
+            if ((*index)[table[h]].del != v) continue;
+            for (size_t i = table[h]; i < index->size() && (*index)[i].del == v; i++) {
+                char w[16]; int m = 0;
+                for (unsigned long long x = (*index)[i].full; x; x >>= 5) w[m++] = (char)('a' - 1 + (x & 31));
+                std::reverse(w, w + m); w[m] = 0;
+                f((*index)[i].id, (const char*)w);
+            }
+            break;
+        }
+    }
+}
+/** Characters as shown (GET values, no capitals) as UTF-8: no engine replay, so cheap enough for every space. */
+static bool asShownUtf8(const Uint32* shown, const int& n, std::string& out) {
+    out.clear();
+    for (int x = 0; x < n; x++) {
+        Uint32 c = shown[x];
+        unsigned u = (c & CHAR_CODE_MASK) ? (c & 0xFFFF) : keyCodeToCharacter(c & CHAR_MASK);
+        if (u == 0) return false;
+        if (u >= 'A' && u <= 'Z') u += 32;
+        if (u < 0x80) out += (char)u;
+        else if (u < 0x800) { out += (char)(0xC0 | u >> 6); out += (char)(0x80 | (u & 63)); }
+        else { out += (char)(0xE0 | u >> 12); out += (char)(0x80 | ((u >> 6) & 63)); out += (char)(0x80 | (u & 63)); }
+    }
+    return n > 0;
+}
+/** GET for a letter with its marks (no capitals) as a character code, remembered: GET and keyCodeToCharacter look in maps. */
+static Uint32 asShownChar(const Uint32& c) {
+    enum { FLAGS = TONE_MASK | TONEW_MASK | MARK1_MASK | MARK2_MASK | MARK3_MASK | MARK4_MASK | MARK5_MASK | STANDALONE_MASK };
+    Uint32 k = c & CHAR_MASK;
+    if (k >= 128 || (c & ~(CHAR_MASK | FLAGS))) return GET(c);
+    static Uint32* memo = NULL;
+    if (!memo) { memo = new Uint32[128 << 8]; for (int i = 0; i < (128 << 8); i++) memo[i] = 0xFFFFFFFF; }
+    Uint32 f = (c & FLAGS) >> 17;   //TONE_MASK (0x20000) .. STANDALONE_MASK (0x1000000): 8 bits
+    Uint32& m = memo[k << 8 | (f & 0xFF)];
+    if (m == 0xFFFFFFFF) { m = GET(c); if (!(m & CHAR_CODE_MASK)) m = CHAR_CODE_MASK | keyCodeToCharacter(m & CHAR_MASK); }   //as asShownUtf8 reads it
+    return m;
+}
+/** The current word as shown, lowercase. */
+static bool asTypingSurface(std::string& out) {
+    //asked up to three times at a space for the same word: the last answer is kept
+    static Uint32 word[MAX_BUFF]; static int n = -1; static std::string last; static bool ok = false;
+    if (_index <= 0 || _index >= MAX_BUFF) return false;
+    if (_index != n || memcmp(word, TypingWord, _index * sizeof(Uint32))) {
+        Uint32 shown[MAX_BUFF];
+        for (int x = 0; x < _index; x++) shown[x] = asShownChar(TypingWord[x] & ~CAPS_MASK);
+        ok = asShownUtf8(shown, _index, last);
+        memcpy(word, TypingWord, _index * sizeof(Uint32)); n = _index;
+    }
+    out = last;
+    return ok;
+}
+/** The current word's id in the context table, or -1 (looked up once per word: asked by both D63 parts at a space). */
+static int asTypingWordId() {
+    static std::string last; static int id = -1;
+    std::string w;
+    if (!asTypingSurface(w)) return -1;
+    if (w != last) { last = w; id = asCtxWordId(w); }
+    return id;
+}
+#ifndef AS_CTX_W
+#define AS_CTX_W 1.0
+#endif
+#ifndef AS_CTX_MIN
+#define AS_CTX_MIN (-8)
+#endif
+#ifndef AS_CTX_MAX
+#define AS_CTX_MAX 20
+#endif
+/** How much better the fix (its characters as shown) fits after the previous word than on average (10 = 10x), in score points. */
+static int asContextBonus(const Uint32* shown, const int& count) {
+    int p = _ctxPrev;
+    if (p < 0 || AS_CTX_W <= 0) return 0;
+    double cp = exp2(kCtxWordLog[p] / 8.0);
+    if (cp < 50) return 0;   //too rare to say what follows it
+    std::string w; if (!asShownUtf8(shown, count, w)) return 0;
+    int c = asCtxWordId(w); if (c < 0) return 0;
+    double v = 10 * log10(asCtxPair(p, c) * kCtxTotal / (cp * exp2(kCtxWordLog[c] / 8.0)));
+    if (v < AS_CTX_MIN) v = AS_CTX_MIN; if (v > AS_CTX_MAX) v = AS_CTX_MAX;
+    return (int)lround(v * AS_CTX_W);
+}
+/** At a single space: the word just ended becomes the context of the next one (only a Vietnamese word as shown). */
+static void asNoteContextWord(bool vietnamese) {
+    _ctxPrev = vietnamese ? asTypingWordId() : -1;   //a known syllable, or nothing
+}
+void vAutoFixTypoForgetContext() { _ctxPrev = -1; }
 
-static void asTypoTry(const char* w, int cost, AsTypoBest& best, AsTypoBest& second) {
+struct AsTypoBest { char letters[AS_KEY_LEN]; int score; Uint32 shown[MAX_BUFF]; int shownCount; int cost; };
+
+/** Keeps the fix "w" (rendered result, score s) if it is among the best two. */
+static void asTypoKeep(const char* w, const int& cost, const int& s, const Uint32* result, const int& count, AsTypoBest& best, AsTypoBest& second) {
+    if (s <= second.score) return;
+    //one entry per rendered text (two edits can give the same word)
+    if (best.shownCount == count && !memcmp(best.shown, result, count * sizeof(Uint32))) { if (s > best.score) { best.score = s; strcpy(best.letters, w); best.cost = cost; } return; }
+    if (s > best.score) {
+        if (best.shownCount > 0) second = best;
+        strcpy(best.letters, w); best.score = s; memcpy(best.shown, result, count * sizeof(Uint32)); best.shownCount = count; best.cost = cost;
+    } else if (s > second.score) {
+        if (second.shownCount == count && !memcmp(second.shown, result, count * sizeof(Uint32))) { second.score = s; second.cost = cost; return; }
+        strcpy(second.letters, w); second.score = s; memcpy(second.shown, result, count * sizeof(Uint32)); second.shownCount = count; second.cost = cost;
+    }
+}
+/** The fixes with the word before (D63) and without it, both from one replay of each candidate. */
+struct AsTypoPick { AsTypoBest best, second, best0, second0; bool ctx; };
+static void asTypoTry(const char* w, int cost, AsTypoPick& pk) {
     Uint32 keys[AS_KEY_LEN], result[MAX_BUFF];
     int n = (int)strlen(w);
     for (int i = 2; i < n; i++) if (w[i] == w[i - 1] && w[i] == w[i - 2]) return;   //"looox" undoes the ô and reads "loõ"
@@ -2160,19 +2374,84 @@ static void asTypoTry(const char* w, int cost, AsTypoBest& best, AsTypoBest& sec
     int s = asReplay(keys, n, result, count, &changed);
     if (s == AS_MISSING || count <= 0) return;
     s -= cost;
-    if (s <= second.score) return;
+    if (s + (pk.ctx && AS_CTX_W > 0 ? AS_CTX_MAX * AS_CTX_W : 0) <= pk.second.score && (!pk.ctx || s <= pk.second0.score)) return;   //no bonus can help
+    int sc = pk.ctx ? s + asContextBonus(result, count) : s;   //D63: the word that fits after the previous one
+    if (sc <= pk.second.score && (!pk.ctx || s <= pk.second0.score)) return;
     if (!vAutoSwitchIsVietnameseSpelling(w)) return;   //keys that undo themselves ("neseus" reads "nêus")
-    //one entry per rendered text (two edits can give the same word)
-    if (best.shownCount == count && !memcmp(best.shown, result, count * sizeof(Uint32))) { if (s > best.score) { best.score = s; strcpy(best.letters, w); } return; }
-    if (s > best.score) {
-        if (best.shownCount > 0) second = best;
-        strcpy(best.letters, w); best.score = s; memcpy(best.shown, result, count * sizeof(Uint32)); best.shownCount = count;
-    } else if (s > second.score) {
-        if (second.shownCount == count && !memcmp(second.shown, result, count * sizeof(Uint32))) { second.score = s; return; }
-        strcpy(second.letters, w); second.score = s; memcpy(second.shown, result, count * sizeof(Uint32)); second.shownCount = count;
-    }
+    asTypoKeep(w, cost, sc, result, count, pk.best, pk.second);
+    if (pk.ctx) asTypoKeep(w, cost, s, result, count, pk.best0, pk.second0);
 }
 
+#ifndef AS_TYPO_MISS
+#define AS_TYPO_MISS 14     //a key left out (D63): "ddosn" for "ddoasn"
+#endif
+/** Every word one slip away from the keys "raw" (n keys), into best / second. */
+static void asTypoCandidates(const char* raw, const int& n, AsTypoPick& pk, bool missing = false) {
+    char w[AS_KEY_LEN];
+    for (int i = 0; i < n; i++) {
+        if (i + 1 < n && raw[i] != raw[i + 1]) {                                  //two keys swapped
+            strcpy(w, raw); w[i] = raw[i + 1]; w[i + 1] = raw[i];
+            asTypoTry(w, AS_TYPO_SWAP, pk);
+        }
+        if (n >= 5) {                                                             //an extra key (never down to 3 keys)
+        int j = 0; for (int k = 0; k < n; k++) if (k != i) w[j++] = raw[k]; w[j] = 0;
+        bool same = (i > 0 && raw[i - 1] == raw[i]) || (i + 1 < n && raw[i + 1] == raw[i]);
+        bool near = (i > 0 && strchr(kAsNeighbors[raw[i - 1] - 'a'], raw[i])) || (i + 1 < n && strchr(kAsNeighbors[raw[i + 1] - 'a'], raw[i]));
+        asTypoTry(w, same ? AS_TYPO_EXTRA_SAME : near ? AS_TYPO_EXTRA_NEAR : AS_TYPO_EXTRA, pk);
+        }
+        for (const char* p = kAsNeighbors[raw[i] - 'a']; *p; p++) {               //a neighbouring key
+            strcpy(w, raw); w[i] = *p;
+            asTypoTry(w, AS_TYPO_NEAR, pk);
+        }
+    }
+    //a key left out (D63): only letters that make a Vietnamese word, never a third same letter in a row
+    if (missing && n + 1 < AS_KEY_LEN) {
+        static const char kMiss[] = "aeiouydwfrxjsnghtc";
+        bool toned = false;   //a word with a tone key: another one would replace the tone, not add a missing key ("ddas" + x)
+        for (int i = 1; i < n; i++) if (strchr("frxjs", raw[i])) toned = true;
+        for (int i = 0; i <= n; i++)
+            for (const char* p = kMiss; *p; p++) {
+                if ((i > 0 && raw[i - 1] == *p) && (i < n && raw[i] == *p)) continue;
+                if (toned && strchr("frxjs", *p)) continue;
+                memcpy(w, raw, i); w[i] = *p; memcpy(w + i + 1, raw + i, n - i); w[n + 1] = 0;
+                asTypoTry(w, AS_TYPO_MISS, pk);
+            }
+    }
+}
+/** Replaces the current word (n keys) by the keys "letters", capitals kept by position. */
+static bool asApplyTypoFix(const char* letters, const int& n, const int& handleCode) {
+    //the fix as keys, capitals kept by position ("Rtinhf" -> "Trình")
+    int m = (int)strlen(letters);
+    Uint32 keys[AS_KEY_LEN];
+    for (int i = 0; i < m; i++) keys[i] = asKeyOfLetter(letters[i]) | (i < n && (KeyStates[i] & CAPS_MASK) ? CAPS_MASK : 0);
+    if (n > 0 && (KeyStates[0] & CAPS_MASK)) keys[0] |= CAPS_MASK;
+    //what is on screen now, for Backspace undo
+    int shown = _index;
+    vAutoSwitchUndoCount = 0;
+    for (int x = 0; x < shown && vAutoSwitchUndoCount < MAX_BUFF; x++) vAutoSwitchUndoData[vAutoSwitchUndoCount++] = GET(TypingWord[x]);
+    //type the fix on a scratch session, then make it the current word
+    AsEngineState saved;
+    asSaveState(saved);
+    _spaceCount = 0;
+    startNewSession();
+    for (int x = 0; x < m; x++) vKeyHandleEvent(vKeyEvent::Keyboard, vKeyEventState::KeyDown, (Uint16)(keys[x] & CHAR_MASK), (keys[x] & CAPS_MASK) ? 1 : 0, false);
+    Uint32 word[MAX_BUFF], states[MAX_BUFF];
+    int index = _index, stateIndex = _stateIndex;
+    if (index <= 0 || index >= MAX_BUFF || stateIndex >= MAX_BUFF) { asRestoreState(saved); return false; }
+    memcpy(word, TypingWord, index * sizeof(Uint32));
+    memcpy(states, KeyStates, stateIndex * sizeof(Uint32));
+    asRestoreState(saved);
+    memcpy(TypingWord, word, index * sizeof(Uint32));
+    memcpy(KeyStates, states, stateIndex * sizeof(Uint32));
+    _index = index; _stateIndex = stateIndex;
+    tempDisableKey = false;
+    hCode = handleCode;
+    hBPC = shown;
+    hNCC = index;
+    for (int x = 0; x < index; x++) hData[index - 1 - x] = GET(TypingWord[x]);
+    vAutoFixTypoDone = 1;
+    return true;
+}
 static bool asFixTypoCore(const int& handleCode);
 /** At a word break in Vietnamese mode: replace a mistyped word by its fix. True when it did (hCode etc. set).
  *  Trying the fixes replays keys through the engine: what that sets for the platform is put back. */
@@ -2204,58 +2483,172 @@ static bool asFixTypoCore(const int& handleCode) {
     char key[AS_KEY_LEN]; bool transformed;
     if (asWordKey(key, transformed) && asVietnameseScore(key) != AS_MISSING) return false;   //it reads as Vietnamese
     if (vAutoSwitchIsVietnameseSpelling(raw)) return false;                     //a rare but valid syllable
-    AsTypoBest best, second;
-    best.score = second.score = AS_MISSING; best.shownCount = second.shownCount = 0;
-    char w[AS_KEY_LEN];
-    for (int i = 0; i < n; i++) {
-        if (i + 1 < n && raw[i] != raw[i + 1]) {                                  //two keys swapped
-            strcpy(w, raw); w[i] = raw[i + 1]; w[i + 1] = raw[i];
-            asTypoTry(w, AS_TYPO_SWAP, best, second);
-        }
-        if (n >= 5) {                                                             //an extra key (never down to 3 keys)
-        int j = 0; for (int k = 0; k < n; k++) if (k != i) w[j++] = raw[k]; w[j] = 0;
-        bool same = (i > 0 && raw[i - 1] == raw[i]) || (i + 1 < n && raw[i + 1] == raw[i]);
-        bool near = (i > 0 && strchr(kAsNeighbors[raw[i - 1] - 'a'], raw[i])) || (i + 1 < n && strchr(kAsNeighbors[raw[i + 1] - 'a'], raw[i]));
-        asTypoTry(w, same ? AS_TYPO_EXTRA_SAME : near ? AS_TYPO_EXTRA_NEAR : AS_TYPO_EXTRA, best, second);
-        }
-        for (const char* p = kAsNeighbors[raw[i] - 'a']; *p; p++) {               //a neighbouring key
-            strcpy(w, raw); w[i] = *p;
-            asTypoTry(w, AS_TYPO_NEAR, best, second);
-        }
+    AsTypoPick pk;
+    pk.ctx = _ctxPrev >= 0;
+    for (AsTypoBest* b : {&pk.best, &pk.second, &pk.best0, &pk.second0}) { b->score = AS_MISSING; b->shownCount = 0; }
+    asTypoCandidates(raw, n, pk);
+    auto clear = [&](const AsTypoBest& b, const AsTypoBest& c) {
+        return b.shownCount > 0 && b.score >= AS_TYPO_FLOOR && (c.shownCount <= 0 || b.score - c.score >= AS_TYPO_MARGIN); };
+    const AsTypoBest* best = &pk.best;
+    if (!clear(pk.best, pk.second)) {   //D63: the word before only helps; without it the fix may still be clear
+        if (!pk.ctx || !clear(pk.best0, pk.second0)) return false;
+        best = &pk.best0;
     }
-    if (best.shownCount <= 0 || best.score < AS_TYPO_FLOOR) return false;
-    if (second.shownCount > 0 && best.score - second.score < AS_TYPO_MARGIN) return false;
-    //the fix as keys, capitals kept by position ("Rtinhf" -> "Trình")
-    int m = (int)strlen(best.letters);
+    return asApplyTypoFix(best->letters, n, handleCode);
+}
+#ifndef AS_RW_MARGIN
+#define AS_RW_MARGIN 15     //a real word is replaced only when the fix fits its neighbours this much better, slip included (D63)
+#endif
+#ifndef AS_RW_PAIR
+#define AS_RW_PAIR 20       //and real text has the fix + the next word at least this often
+#endif
+#ifndef AS_RW_SEEN
+#define AS_RW_SEEN 20       //a word real text has this often after the word before, or before the next one, stays
+#endif
+int vAutoFixRealWords = 1;
+/** D63: the word before the current one, kept at its space for a second look once the next word is known. */
+void vAutoFixForgetPrevious() { _rwPrev.valid = false; }
+/** Keys typed, tone key moved last ("ddosn" -> "ddons") and ươ as "uwow", like the table's keys. */
+static std::string asRwNormalize(const char* raw) {
+    std::string in(raw), out; char tone = 0; bool vowel = false;
+    size_t p = in.find("uow"); if (p != std::string::npos && in.find("uwow") == std::string::npos) in.replace(p, 3, "uwow");
+    for (char c : in) {
+        if (vowel && strchr("sfrxj", c)) { tone = c; continue; }
+        if (strchr("aeiouy", c)) vowel = true;
+        out += c;
+    }
+    if (tone) out += tone;
+    return out;
+}
+/** The same keys but the tone (normalized keys, tone last): "trọng số" and "ảnh em" are both meant. */
+static bool asSameButTone(const char* t, const char* c) {
+    int nt = (int)strlen(t), nc = (int)strlen(c);
+    if (nt > 0 && strchr("sfrxj", t[nt - 1]) && nt > 1) nt--;
+    if (nc > 0 && strchr("sfrxj", c[nc - 1]) && nc > 1) nc--;
+    return nt == nc && !strncmp(t, c, nt);
+}
+/** The cost of one slip turning keys "c" into the keys typed "t" (D60 costs), or -1. */
+static int asOneSlip(const char* t, const char* c) {
+    int nt = (int)strlen(t), nc = (int)strlen(c);
+    auto near = [](char a, char b) { return a >= 'a' && a <= 'z' && strchr(kAsNeighbors[a - 'a'], b) != NULL; };
+    if (nt == nc) {
+        int d1 = -1, d2 = -1, nd = 0;
+        for (int i = 0; i < nt; i++) if (t[i] != c[i]) { if (nd == 0) d1 = i; else d2 = i; nd++; }
+        if (nd == 1) return near(c[d1], t[d1]) ? AS_TYPO_NEAR : -1;
+        if (nd == 2 && d2 == d1 + 1 && t[d1] == c[d2] && t[d2] == c[d1]) return AS_TYPO_SWAP;
+        return -1;
+    }
+    if (nc == nt + 1) {   //a key left out
+        int i = 0; while (i < nt && t[i] == c[i]) i++;
+        return strcmp(t + i, c + i + 1) == 0 ? AS_TYPO_MISS : -1;
+    }
+    if (nt == nc + 1 && nt >= 4) {   //an extra key
+        int i = 0; while (i < nc && t[i] == c[i]) i++;
+        if (strcmp(t + i + 1, c + i) != 0) return -1;
+        bool same = (i > 0 && t[i - 1] == t[i]) || (i + 1 < nt && t[i + 1] == t[i]);
+        bool nb = (i > 0 && near(t[i - 1], t[i])) || (i + 1 < nt && near(t[i + 1], t[i]));
+        return same ? AS_TYPO_EXTRA_SAME : nb ? AS_TYPO_EXTRA_NEAR : AS_TYPO_EXTRA;
+    }
+    return -1;
+}
+static double asRwScore(const double& withBefore, int w, const double& withAfter) {
+    //P(w | before) P(after | w) up to what all readings share: pair(before, w) pair(w, after) / count(w)
+    return 10 * log10(withAfter + 0.5) + 10 * log10(withBefore + 0.5) - 10 * log10(exp2(kCtxWordLog[w] / 8.0));
+}
+/** At the space after a Vietnamese word: was the word before it a real word typed by mistake, now that both its
+ *  neighbours are known ("dự đón trước" -> "dự đoán trước")? Rewrites that word and the current one. */
+static bool asFixPreviousWordCore() {
+    if (!vAutoFixTypo || !vAutoFixRealWords || vLanguage != 1 || !_rwPrev.valid) return false;
+    if (_spaceCount != 0 || _index <= 0 || !wordFitsBuffer() || _longWordHelper.size() > 0) return false;
+    if (_typingStates.size() < 2 || _typingStates.back().size() != 1 || _typingStates.back()[0] != KEY_SPACE) return false;
+    auto prevIt = std::prev(_typingStates.end(), 2);
+    if ((int)prevIt->size() != _rwPrev.shown) return false;
+    int after = asTypingWordId(), typed = _rwPrev.typed, before = _rwPrev.before;
+    if (after < 0 || typed < 0) return false;
+    if (before < 0) return false;   //both neighbours or nothing: one side alone fixed "Cầu lông là" to "ông là"
+    //the word fits both neighbours in real text (most words): nothing to look at, and no time spent on candidates
+    double typedAfter = asCtxPair(typed, after), typedBefore = asCtxPair(before, typed);
+    if (typedAfter >= AS_RW_SEEN || typedBefore >= AS_RW_SEEN) return false;
+    //the keys as typed: a word with many capitals, or also an English word, is left alone
+    asInitLetters();
+    char raw[AS_KEY_LEN];
+    if (!asRawWord(_rwPrev.keys, _rwPrev.n, raw) || !asFewCapitals(_rwPrev.keys, _rwPrev.n)) return false;
+    if (asEnglishScore(raw) != AS_MISSING) return false;
+    double typedScore = asRwScore(typedBefore, typed, typedAfter);
+    std::string t = asRwNormalize(raw);
+    int tn = (int)t.size();
+    if (tn < 2) return false;
+    //every word one slip away from the keys typed (D60 slips and a key left out) that real text has after the word
+    //before: generated from the keys and looked up, so the time doesn't depend on how common the word before is
+    int pickId = -1; double pickScore = -1e9, secondScore = -1e9;
+    int seen[64], seenCount = 0;   //each word once (a word one slip away is found once or twice)
+    asCtxNearKeys(t.c_str(), [&](int c, const char* ck) {
+        if (c == typed) return;
+        int cost = asOneSlip(t.c_str(), ck);
+        if (cost < 0) return;
+        for (int i = 0; i < seenCount; i++) if (seen[i] == c) return;
+        if (seenCount < 64) seen[seenCount++] = c;
+        if (asSameButTone(t.c_str(), ck)) return;
+        int known = asCtxPairIndex(before, c);   //real text has it after the word before
+        if (known < 0) return;
+        double withAfter = asCtxPair(c, after);
+        if (withAfter < AS_RW_PAIR) return;
+        double v = asRwScore(exp2(kCtxPairLog[known] / 8.0), c, withAfter) - cost;
+        if (v > pickScore) { secondScore = pickScore; pickScore = v; pickId = c; }
+        else if (v > secondScore) secondScore = v;
+    });
+    if (pickId < 0 || pickScore - typedScore < AS_RW_MARGIN || pickScore - secondScore < AS_TYPO_MARGIN) return false;
+    struct { char letters[AS_KEY_LEN]; } pickKeys;
+    const char* pk = kCtxWordKeys + kCtxWordKeyOffsets[pickId];
+    if (strlen(pk) >= AS_KEY_LEN) return false;
+    strcpy(pickKeys.letters, pk);
+    const auto* pick = &pickKeys;
+    //the fix as the word before: its keys typed on a scratch session, capitals kept by position
+    int m = (int)strlen(pick->letters);
     Uint32 keys[AS_KEY_LEN];
-    for (int i = 0; i < m; i++) keys[i] = asKeyOfLetter(best.letters[i]) | (i < n && (KeyStates[i] & CAPS_MASK) ? CAPS_MASK : 0);
-    if (n > 0 && (KeyStates[0] & CAPS_MASK)) keys[0] |= CAPS_MASK;
-    //what is on screen now, for Backspace undo
-    int shown = _index;
-    vAutoSwitchUndoCount = 0;
-    for (int x = 0; x < shown && vAutoSwitchUndoCount < MAX_BUFF; x++) vAutoSwitchUndoData[vAutoSwitchUndoCount++] = GET(TypingWord[x]);
-    //type the fix on a scratch session, then make it the current word
-    AsEngineState saved;
-    asSaveState(saved);
+    for (int i = 0; i < m; i++) keys[i] = asKeyOfLetter(pick->letters[i]) | (i < _rwPrev.n && (_rwPrev.keys[i] & CAPS_MASK) ? CAPS_MASK : 0);
+    if (_rwPrev.n > 0 && (_rwPrev.keys[0] & CAPS_MASK)) keys[0] |= CAPS_MASK;
+    AsEngineState state;
+    asSaveState(state);
     _spaceCount = 0;
     startNewSession();
     for (int x = 0; x < m; x++) vKeyHandleEvent(vKeyEvent::Keyboard, vKeyEventState::KeyDown, (Uint16)(keys[x] & CHAR_MASK), (keys[x] & CAPS_MASK) ? 1 : 0, false);
-    Uint32 word[MAX_BUFF], states[MAX_BUFF];
-    int index = _index, stateIndex = _stateIndex;
-    if (index <= 0 || index >= MAX_BUFF || stateIndex >= MAX_BUFF) { asRestoreState(saved); return false; }
-    memcpy(word, TypingWord, index * sizeof(Uint32));
-    memcpy(states, KeyStates, stateIndex * sizeof(Uint32));
-    asRestoreState(saved);
-    memcpy(TypingWord, word, index * sizeof(Uint32));
-    memcpy(KeyStates, states, stateIndex * sizeof(Uint32));
-    _index = index; _stateIndex = stateIndex;
-    tempDisableKey = false;
-    hCode = handleCode;
-    hBPC = shown;
-    hNCC = index;
-    for (int x = 0; x < index; x++) hData[index - 1 - x] = GET(TypingWord[x]);
-    vAutoFixTypoDone = 1;
+    int fixN = _index;
+    Uint32 fix[MAX_BUFF];
+    if (fixN > 0 && fixN < MAX_BUFF) memcpy(fix, TypingWord, fixN * sizeof(Uint32));
+    asRestoreState(state);
+    if (fixN <= 0 || fixN + 1 + _index >= MAX_BUFF || _rwPrev.shown + 1 + _index >= MAX_BUFF) return false;
+    {   //the keys must give that word (the table's keys are Telex with the tone last: always, but cheap to check)
+        Uint32 shown[MAX_BUFF]; std::string w;
+        for (int x = 0; x < fixN; x++) shown[x] = GET(fix[x] & ~CAPS_MASK);
+        if (!asShownUtf8(shown, fixN, w) || asCtxWordId(w) != pickId) return false;
+    }
+    //delete both words and the space between, type the fix, the space and the current word (the app adds this space)
+    Uint32 out[MAX_BUFF]; int n = 0;
+    for (int x = 0; x < fixN; x++) out[n++] = GET(fix[x]);
+    out[n++] = KEY_SPACE;
+    for (int x = 0; x < _index; x++) out[n++] = GET(TypingWord[x]);
+    hCode = vRestore;
+    hBPC = _rwPrev.shown + 1 + _index;
+    hNCC = n;
+    for (int x = 0; x < n; x++) hData[n - 1 - x] = out[x];
+    prevIt->assign(fix, fix + fixN);   //Backspace into it reopens the fix
+    _rwPrev.valid = false;
     return true;
+}
+static bool asFixPreviousWord() {
+    int request = vAutoSwitchRequest, side = vAutoSwitchLastSide, restored = vAutoSwitchRestoredCount;
+    bool fixed = asFixPreviousWordCore();
+    vAutoSwitchRequest = request; vAutoSwitchLastSide = side; vAutoSwitchRestoredCount = restored;
+    return fixed;
+}
+/** At a single space: the word just ended, for asFixPreviousWord at the next space. */
+static void asNotePreviousWord(const int& typed, const int& before) {
+    _rwPrev.valid = false;
+    if (typed < 0 || _stateIndex < 3 || _stateIndex > 12 || _stateIndex < _index || !wordFitsBuffer() || _index <= 0) return;
+    memcpy(_rwPrev.keys, KeyStates, _stateIndex * sizeof(Uint32));   //the checks on the keys wait until they're needed
+    _rwPrev.n = _stateIndex; _rwPrev.shown = _index; _rwPrev.typed = typed; _rwPrev.before = before;
+    _rwPrev.valid = true;
 }
 /*==========================================================================================================*/
 
@@ -2303,11 +2696,13 @@ void vKeyHandleEvent(const vKeyEvent& event,
         hExt = 1; //word break
         
         _asApostrophe = data == KEY_QUOTE && capsStatus != 1;
+        _ctxPrev = -1; _rwPrev.valid = false;   //D63: a fix's context is the word before it, after a single space
         //after a space the word was already checked at the space: a later ( . , etc. must not reach back over the space
         //("zẻo" space "(" gave "zzero(", D53; same as the hyphen in D52)
         bool switchBreak = asIsSwitchBreak(event, data, capsStatus, otherControlKey) && _spaceCount == 0;
         bool english = switchBreak && asShouldRestoreToEnglish();
-        bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english);   //a Telex typo: the word one key away (D60)
+        bool unknownWord = english && _asRestoreUnknown;
+        bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english && !unknownWord);   //a Telex typo: the word one key away (D60)
         bool asSwitch = !typoFixed && (english ||
                         (data == KEY_MINUS && capsStatus != 1 && !otherControlKey && _spaceCount == 0 && asHyphenRestore()));   //a hyphen after a space isn't part of the word ("wr -" gave "wr wr-", D52)
         _asApostrophe = false;
@@ -2315,6 +2710,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
             //a Telex typo: the word one key away (D60)
         } else if (asSwitch) {
             asRestoreToEnglish(vRestoreAndStartNewSession); //auto switch: an English word typed in Vietnamese mode
+            if (unknownWord) asStayVietnamese();
         } else if (vRestoreIfWrongSpelling && isWordBreak(event, state, data)) { //restore key if wrong spelling with break-key
             if (!tempDisableKey && vCheckSpelling) {
                 checkSpelling(true); //force check spelling
@@ -2355,20 +2751,32 @@ void vKeyHandleEvent(const vKeyEvent& event,
             checkSpelling(true); //force check spelling
         }
         bool english = asShouldRestoreToEnglish();
-        if (asFixTypo(vRestore, english)) { //a Telex typo: the word one key away (D60)
+        bool unknownWord = english && _asRestoreUnknown;
+        bool typoFixed = asFixTypo(vRestore, english && !unknownWord);
+        if (typoFixed) { //a Telex typo: the word one key away (D60)
             _spaceCount++;
         } else if (english) { //auto switch: an English word typed in Vietnamese mode
             asRestoreToEnglish(vRestore);
+            if (unknownWord) asStayVietnamese();
             _spaceCount++;
         } else if (vRestoreIfWrongSpelling && tempDisableKey) { //restore key if wrong spelling
             if (!checkRestoreIfWrongSpelling(vRestore)) {
                 hCode = vDoNothing;
             }
             _spaceCount++;
+        } else if (asFixPreviousWord()) { //the word before was a real word typed by mistake (D63)
+            _spaceCount++;
         } else { //do nothing with SPACE KEY
             hCode = vDoNothing;
             _spaceCount++;
         }
+        //D63: the context of the next word's typo fix
+        if (_spaceCount == 1) {
+            bool vietnamese = hCode == vDoNothing || typoFixed || hBPC > _index;   //unchanged, fixed, or the word before fixed
+            int before = _ctxPrev;
+            asNoteContextWord(vietnamese);
+            asNotePreviousWord(_ctxPrev, before);
+        } else { _ctxPrev = -1; _rwPrev.valid = false; }
         //look-back memory: only words separated by a single space count
         if (hCode == vDoNothing && _spaceCount == 1) asRememberWord(); else if (_spaceCount > 1) _asPrevCount = 0;
         //save word
@@ -2383,6 +2791,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
         _asWordStartOk = true;
     } else if (data == KEY_DELETE) {
         _asPrevCount = 0;
+        if (_index == 0) _rwPrev.valid = false;   //D63: back over the space: the word before may change
         hCode = vDoNothing;
         hExt = 2; //delete
         if (_specialChar.size() > 0) {

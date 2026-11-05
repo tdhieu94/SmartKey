@@ -113,6 +113,8 @@ extern int vAutoSwitchRequest;
  * with the shown word in vAutoSwitchUndoData, so the platform can offer Backspace undo.
  */
 extern int vAutoFixTypo;
+extern int vAutoSwitchTypoStaysVietnamese;   // D62: a word in neither list (a typo) is restored without switching to English
+extern int vAutoFixRealWords;   // D63: a real word that does not fit after the previous one is fixed too
 extern int vAutoFixTypoDone;
 /** Words people really type (shorthand, slang, brands): never auto-corrected. Lowercase, as typed. */
 bool vIsKeepWord(const char* typed);

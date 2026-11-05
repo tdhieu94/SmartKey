@@ -5,6 +5,35 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 63. Fix typos from the words around them
+
+**Status:** Built 2026-11-05. Asked by Hieu: "phát triển bộ gõ này sẽ hiểu được ngữ cảnh câu để có thể tự động sửa từ cho đúng". Hieu chose word pairs, on the device (no network, nothing leaves the computer).
+
+**Decided.**
+- `Engine/ContextData.h` (made by `Tools/autoswitch/build_context.py`): how often one syllable follows another in Vietnamese news (VNTC, from github.com/lingskr/Vietnamese-Corpus-and-Dictionary; counts only, no text; every 10th file left out for testing). 11,639 syllables of vi_50k.txt, 289,141 pairs seen 5+ times, about 1.7 MB in the app (and about 2 MB of lookup tables built on first use).
+- D60 typo fixes: each candidate gets a bonus for how well it fits after the word before (PMI in dB, -8 to +20). When that leaves no clear winner, the fix without the word before is used, so the word before only ever helps. "duwj ddosn" → "dự đoán", not "dự đón".
+- A real word typed by mistake ("gôm" in "ngày gôm qua"): at the space after the next word, the word before it is fixed when a word one slip away (D60 slips or one key left out) fits both neighbours much better (AS_RW_MARGIN 15, fix + next word seen 20+ times). It needs a word on each side ("Cầu lông là" stays, not "ông"), never changes only the tone ("trọng số", "ảnh em" stay), and leaves alone a word the table already has next to either neighbour 20+ times, English words, and words with many capitals. `vAutoFixRealWords` (on).
+- Known: a look-back fix has no Backspace undo (Backspace just deletes from the fixed text). One false fix in the chat goldens ("cử tôi" → "của tôi").
+
+**Measured.** Held-out news sentences with one slip each: 2110/4000 typed right vs 1864 with D62; sentences without a slip: 110/117 both. chat_typos goldens: 13 more right words (jhoangr → khoảng, vaazn → vẫn, làn → làm, thờ → thời, …), 1 wrong (cử → của). Per key: p99.9 about 12 µs (budget 20 µs); the candidate search looks words up by keys with one left out, so its time doesn't depend on how common the word before is.
+
+**Locked by:** rules D63 (6 cases); undo_test (cuxng … goom qua); goldens.
+
+## 62. A typo doesn't switch to English
+
+**Status:** Built 2026-11-05. Asked by Hieu: "phần mềm đôi khi tự động chuyển sang tiếng Anh, mỗi lần như vậy tôi lại phải chuyển sang tiếng Việt".
+
+**Cause.** A word that is neither a Vietnamese syllable nor in the English list ("taijq") was read as a foreign word (D8.2, D10): put back to the keys typed, and Vikey switched to English. For someone who types fast most such words are Vietnamese typos, and every one of them left the next words without marks.
+
+**Decided.**
+- Such a word is still put back to the keys typed, but Vietnamese stays on. Backspace right after gives back what Telex showed (D20 undo). Known English words switch as before.
+- It also gets the D60 typo fix like any Vietnamese word (there is no English word to protect): "bajnn" → "bạn". Code names (chdir) stay as typed: D60's own guards.
+- `vAutoSwitchTypoStaysVietnamese` (on); no setting yet.
+
+**Measured.** Realistic typing unchanged (typo 561 → 557 needing a hand fix, no message broken). Goldens: "nos" → "nó", "char" → "chả" in Vietnamese sentences; chat_typos expects 2 more fixed typos ("bajnn", "nuexa"), so its manual count is 77 → 79 like D60. Telex undo of triple vowels ("cuooocf") now stays Vietnamese.
+
+**Locked by:** rules D62 (3 cases); D8.2, D10, D27, D53 foreign-word cases now end in Vietnamese; undo_test (taijq).
+
 ## 61. SmartKey: own name, releases and updates on GitHub
 
 **Status:** Built 2026-11-04. Asked by Hieu: "đưa lên github repo Smartkey và phát hành release để cài đặt, và cho tự động cập nhật".
