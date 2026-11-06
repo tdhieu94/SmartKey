@@ -114,6 +114,7 @@ extern int vAutoSwitchRequest;
  */
 extern int vAutoFixTypo;
 extern int vAutoSwitchTypoStaysVietnamese;   // D62: a word in neither list (a typo) is restored without switching to English
+extern int vAutoSwitchStaysVietnamese;      // D64: English words in a row (in a line with Vietnamese) before Vietnamese mode switches to English (2)
 extern int vAutoFixRealWords;   // D63: a real word that does not fit after the previous one is fixed too
 extern int vAutoFixTypoDone;
 /** Words people really type (shorthand, slang, brands): never auto-corrected. Lowercase, as typed. */

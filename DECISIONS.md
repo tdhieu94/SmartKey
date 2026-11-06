@@ -5,6 +5,20 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 64. One English word doesn't leave Vietnamese mode
+
+**Status:** Built 2026-11-06. Asked by Hieu: "sau khi tôi viết 1 từ tiếng anh thì từ tiếp theo tôi muốn viết tiếng việt thì phải bấm chuyển về tiếng việt".
+
+**Cause.** An English word restored at its end switched to English mode (D5). In English mode a Vietnamese word comes back only when it reads as Vietnamese at its end, and the most common ones are English words too: cos (có), nos (nó), car (cả), as (á), quas, toots, rox, sex (sẽ). In the chat corpus those were 25 of the 61 manual switches.
+
+**Decided.**
+- In a line that already has a sure Vietnamese word (marks shown, keys not an English word; reset by Enter or a click, and set by the word that brings Vietnamese mode back), an English word is restored but Vietnamese mode stays on. The second English word in a row switches to English as before (`vAutoSwitchStaysVietnamese` = 2), so English sentences still type in English mode.
+- A line with no Vietnamese yet, and an English word before a hyphen, switch at once as before.
+
+**Measured.** Manual switches: chat 61 → 52, chat with typos 79 → 64, synthetic 119 → 115 (wrong words 10 → 11). Realistic typing: typo fixes by hand 558 → 510, nothing broken. Costs: a few English words right after one English word in a Vietnamese line read as Vietnamese (lens → lén, AF → À, its kept English for ít once).
+
+**Locked by:** rules D64 (3 cases); D30, D34, D42 and R16 now end in Vietnamese; undo_test (this makes vaay).
+
 ## 63. Fix typos from the words around them
 
 **Status:** Built 2026-11-05. Asked by Hieu: "phát triển bộ gõ này sẽ hiểu được ngữ cảnh câu để có thể tự động sửa từ cho đúng". Hieu chose word pairs, on the device (no network, nothing leaves the computer).

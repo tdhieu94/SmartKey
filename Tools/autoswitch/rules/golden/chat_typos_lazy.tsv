@@ -1,4 +1,4 @@
-Hôm nay standup lúc 10h nhé, ai còn chưa xong task tgif report sẵn	Hôm nay standup lúc 10h nhé, ai còn chưa xong task thì report sẵn
+Hôm nay standup lúc 10h nhé, ai còn chưa xong task thì report sẵn	Hôm nay standup lúc 10h nhé, ai còn chưa xong task thì report sẵn
 Mình xong feature login rồi, ready for PR review	Mình xong feature login rồi, ready for PR review
 Có bug gì mới không mà phải deploy chiều nay?	Có bug gì mới không mà phải deploy chiều nay?
 Anh A báo task deploy api endpoint, còn đợi review từ team lead	Anh A báo task deploy api endpoint, còn đợi review từ team lead
@@ -29,7 +29,7 @@ Anh ơi, cái error 500 tại sao vậy? Log không show gì	Anh ơi, cái error
 Deploy staging version đã ok, ready move to production	Deploy staging version đã ok, ready move to production
 Ai có checklist cho code review không? Để đảm bảo quality	Ai có checklist cho code review không? Để đảm bảo quality
 Tối nay phải fix thêm vài edge case, task này còn chưa xong hoàn toàn	Tối nay phải fix thêm vài edge case, task này còn chưa xong hoàn toàn
-Mình conflict wr 3 chỗ, có thể help merge không, bận quá	Mình conflict ử 3 chỗ, có thể help merge không, bận quá
+Mình conflict ử 3 chỗ, có thể help merge không, bận quá	Mình conflict ử 3 chỗ, có thể help merge không, bận quá
 Performance test result: load time từ 3s xuống 800ms, pretty good	Performance test result: load time từ 3s xuống 800ms, pretty good
 Chờ deploy đi, mình còn test e2e ở local, xong sẽ push	Chờ deploy đi, mình còn test e2e ở local, xong sẽ push
 Có issue gì urgent không? Hay proceed với sprint plan như thường?	Có issue gì urgent không? Hay proceed với sprint plan như thường?
@@ -74,7 +74,7 @@ em nghĩ feature X không cần phải launch cùng version 1.0, delay sang q4 �
 có ai review cái proposal này chưa, deadline vote sáng mai	có ai review cái proposal này chưa, deadline vote sáng mai
 dependency giữa team frontend và backend cần clarify lại	dependency giữa team frontend và backend cần clarify lại
 Let me share the updated product roadmap with timeline and owners	Let me share the updated product roadmap with timeline and owners
-acquisition strategy cần shift từ paid sang organic, bdd cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
+acquisition strategy cần shift từ paid sang organic, bđ cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
 retention metric là indicator chính, phải focus vào cái này trước	retention metric là indicator chính, phải focus vào cái này trước
 mình check lại data, DAU tăng nhưng engagement rate không tăng	mình check lại data, DAU tăng nhưng engagement rate không tăng
 monthly recurring revenue target là 100k, hiện tại 65k	monthly recurring revenue target là 100k, hiện tại 65k
@@ -195,7 +195,7 @@ Tracking number gửi qua SMS cho bạn rồi, check lại số điện thoại 
 Chất liệu này là cotton 100 , rất mát, perfect cho mùa hè	Chất liệu này là cotton 100 , rất mát, perfect cho mùa hè
 Bạn pay bằng bank transfer được không? Em chỉ accept Môm hoặc bank transfer thôi	Bạn pay bằng bank transfer được không? Em chỉ accept Momo hoặc bank transfer thôi
 Anh có voucher code không? Mình có sale 30  cho ngày hôm nay	Anh có voucher code không? Mình có sale 30  cho ngày hôm nay
-Em sorry, item này discontinue rooid, có similar product khasc không?	Em sorry, item này discontinue rồi, có similar product khasc không?
+Em sorry, item này discontinue rồi, có similar product khasc không?	Em sorry, item này discontinue rồi, có similar product khasc không?
 Cái này được import từ Hàn Quốc, chất lượng guaranteed	Cái này được import từ Hàn Quốc, chất lượng guaranteed
 Bạn có discount code nào không? Em có VIPFIRST50 cho khách VIP	Bạn có discount code nào không? Em có VIPFIRST50 cho khách VIP
 The new collection just dropped, wanna check it out?	The new collection just dropped, wanna check it out?
@@ -535,7 +535,7 @@ CTE nó sẽ giúp query dễ đọc hơn và có thể nhanh hơn	CTE nó sẽ 
 Ừ, mình vừa thử xong, query chạy chỉ còn 20 giây thôi	Ừ, mình vừa thử xong, query chạy chỉ còn 20 giây thôi
 OK được rồi, mình refactor lại dashboard vì data mới đã ready	OK được rồi, mình refactor lại dashboard vì data mới đã ready
 Dashboard nào bạn? Cái dashboard sales hay cái dashboard ops?	Dashboard nào bạn? Cái dashboard sales hay cái dashboard ops?
-Cái dashboard tổng quan cho management as, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
+Cái dashboard tổng quan cho management á, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
 Nình vừa update data source, giờ nó pull từ data warehouse	Nình vừa update data source, giờ nó pull từ data warehouse
 Tốt rồi, bạn refresh dashboard đi, dùng cái new query mình gửi	Tốt rồi, bạn refresh dashboard đi, dùng cái new query mình gửi
 Bạn gửi cho mình cái query đó được không? mình đưa vào dashboard	Bạn gửi cho mình cái query đó được không? mình đưa vào dashboard
@@ -710,7 +710,7 @@ Have you tested the app on iPhone SE yet?	Have you tested the app on iPhone SE y
 Phiên bản này optimization tốt hơn version trước nhiều	Phiên bản này optimization tốt hơn version trước nhiều
 Phải wait app store review khoảng mấy ngày thường	Phải wait app store review khoảng mấy ngày thường
 Em download TestFlight build từ link này test luôn	Em download TestFlight build từ link này test luôn
-Cái deep link tracking cos implement chưa?	Cái deep link tracking có implement chưa?
+Cái deep link tracking có implement chưa?	Cái deep link tracking có implement chưa?
 The rejection reason is related to user data handling, I'll fix it ASAP	The rejection reason is related to user data handling, I'll fix it ASAP
 Mình có 10 testers sẵn sàng, pass link TestFlight đi	Mình có 10 testers sẵn sàng, pass link TestFlight đi
 TestFlight hơi slow hôm nay, network issue hay gì?	TestFlight hơi slow hôm nay, network issue hay gì?
@@ -1076,7 +1076,7 @@ Hmm, I think 23-26 is better, bớt một đêm để save cost	Hmm, I think 23-
 Mình agree, 3 đêm cũng đủ để chơi, không cần 4 đêm	Mình agree, 3 đêm cũng đủ để chơi, không cần 4 đêm
 OK, thế là 23-26 tháng 11, ai là người chủ yếu book?	OK, thế là 23-26 tháng 11, ai là người chủ yếu book?
 Để mình book, mình có account Booking.com credit card ready rồi	Để mình book, mình có account Booking.com credit card ready rồi
-Cmr ơn bạn! Sau khi book xong yhif báo nhóm luôn nhé	Cmr ơn bạn! Sau khi book xong thì báo nhóm luôn nhé
+Cmr ơn bạn! Sau khi book xong thì báo nhóm luôn nhé	Cmr ơn bạn! Sau khi book xong thì báo nhóm luôn nhé
 Chắc chắn, mình sẽ confirm booking và gửi email xác nhận cho mấy bạn	Chắc chắn, mình sẽ confirm booking và gửi email xác nhận cho mấy bạn
 Có càn đặt trước pickup airport hay sao? Mình sợ mệt khi xuống máy bay	Có càn đặt trước pickup airport hay sao? Mình sợ mệt khi xuống máy bay
 Để tao xem cái hotel này có shuttle service không	Để tao xem cái hotel này có shuttle service không
@@ -1611,7 +1611,7 @@ Vâng, production down từ 10h sáng rồi	Vâng, production down từ 10h sán
 API timeout liên tục, có ai check database không?	API timeout liên tục, có ai check database không?
 mình vừa SSH vào server, load average 95 	mình vừa SSH vào server, load average 95 
 phải restart service ngay thôi	phải restart service ngay thôi
-wait, đừng restart buwf, phải tìm root cause trước đã	wait, đừng restart bừ, phải tìm root cause trước đã
+wait, đừng restart bừ, phải tìm root cause trước đã	wait, đừng restart bừ, phải tìm root cause trước đã
 Uh, nếu không restart thì customer sẽ phàn nàn thêm nữa	Uh, nếu không restart thì customer sẽ phàn nàn thêm nữa
 Có memory leak trong app mới deploy hôm qua	Có memory leak trong app mới deploy hôm qua
 Sao deploy mà không test kỹ hơn chứ?	Sao deploy mà không test kỹ hơn chứ?
@@ -1719,7 +1719,7 @@ Mình học được trick là chia prompt thành multiple messages, tốt hơn	
 Có ai dugng prompt injection để test security không?	Có ai dugng prompt injection để test security không?
 It's a real concern for production systems, gotta be careful with user inputs	It's a real concern for production systems, gotta be careful with user inputs
 Mình sợ user sẽ "jailbreak" prompt của mình để lấy sensitive info	Mình sợ user sẽ "jailbreak" prompt của mình để lấy sensitive info
-Ơi khoá các edge case bawfnh guardrails, đừng tin tưởng user input	Ơi khoá các edge case bằnh guardrails, đừng tin tưởng user input
+Ơi khoá các edge case bằnh guardrails, đừng tin tưởng user input	Ơi khoá các edge case bằnh guardrails, đừng tin tưởng user input
 Bao nhiêu token là limit cho một request? Mình hay timeout	Bao nhiêu token là limit cho một request? Mình hay timeout
 Cái context window của GPT-4 lên tới 8k hoặc 32k tokens tuỳ model	Cái context window của GPT-4 lên tới 8k hoặc 32k tokens tuỳ model
 Tớ thường dùng AI để summarize report dài, nó siêu nhanh	Tớ thường dùng AI để summarize report dài, nó siêu nhanh

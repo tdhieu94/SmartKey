@@ -20,9 +20,10 @@ static std::string type(const char* keys) {
 int main() {
     struct { const char* keys; const char* want; const char* why; } cases[] = {
         {"booj source vaay ", "bộ source vây ", "English word that is Vietnamese: fixed"},
-        {"booj source vaay <", "bộ source vaay", "Backspace puts the keys back, without the space"},
-        {"booj source vaay <j ", "bộ source vậy ", "typing on: the whole word is checked again (Tony 2026-10-29)"},
-        {"booj source vaay < ", "bộ source vaay ", "the same word again stays as typed"},
+        {"this makes vaay ", "this makes vây ", "in English mode a Vietnamese word is converted (D64: after bộ, source no longer switches)"},
+        {"this makes vaay <", "this makes vaay", "Backspace puts the keys back, without the space"},
+        {"this makes vaay <j ", "this makes vậy ", "typing on: the whole word is checked again (Tony 2026-10-29)"},
+        {"this makes vaay < ", "this makes vaay ", "the same word again stays as typed"},
         {"xin |hello|<s", "xin hells", "after a switch Backspace doesn't reopen xin (was xin heín)"},
         {"laapj rtinhf ", "lập trình ", "a Telex typo is fixed at the space (D60)"},
         {"laapj rtinhf <", "lập rtinhf", "Backspace right after puts the typed keys back (D60)"},

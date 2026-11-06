@@ -37,7 +37,7 @@ mấy metrics cái này không clear lắm, metrics nào là vanity metrics	mấ
 user acquisition cost tăng 30  đó, tại sao vậy	user acquisition cost tăng 30  đó, tại sao vậy
 chúng ta phải redefine success metrics cho product này	chúng ta phải redefine success metrics cho product này
 em nghĩ feature X không cần phải launch cùng version 1.0, delay sang q4 được	em nghĩ feature X không cần phải launch cùng version 1.0, delay sang q4 được
-acquisition strategy cần shift từ paid sang organic, bdd cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
+acquisition strategy cần shift từ paid sang organic, bđ cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
 retention metric là indicator chính, phải focus vào cái này trước	retention metric là indicator chính, phải focus vào cái này trước
 mình check lại data, DAU tăng nhưng engagement rate không tăng	mình check lại data, DAU tăng nhưng engagement rate không tăng
 monthly recurring revenue target là 100k, hiện tại 65k	monthly recurring revenue target là 100k, hiện tại 65k
@@ -263,7 +263,7 @@ Bạn ơi WHERE clause của mình có 10 điều kiện kìa	Bạn ơi WHERE cl
 Với lại cái subquery trong đó cũng nested mấy cấp nữa	Với lại cái subquery trong đó cũng nested mấy cấp nữa
 Thử rewrite lại, tách subquery ra thành CTE nha	Thử rewrite lại, tách subquery ra thành CTE nha
 CTE nó sẽ giúp query dễ đọc hơn và có thể nhanh hơn	CTE nó sẽ giúp query dễ đọc hơn và có thể nhanh hơn
-Cái dashboard tổng quan cho management as, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
+Cái dashboard tổng quan cho management á, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
 Mình vừa update data source, giờ nó pull từ data warehouse	Mình vừa update data source, giờ nó pull từ data warehouse
 Segment analysis thì cần pull thêm customer profile data không?	Segment analysis thì cần pull thêm customer profile data không?
 Duplicate vì sao? có phải do LEFT JOIN sai không?	Duplicate vì sao? có phải do LEFT JOIN sai không?
@@ -349,7 +349,7 @@ Push notification test có work không các bạn?	Push notification test có wo
 Ai review security audit chưa? Bắt buộc trước khi submit	Ai review security audit chưa? Bắt buộc trước khi submit
 Have you tested the app on iPhone SE yet?	Have you tested the app on iPhone SE yet?
 Em download TestFlight build từ link này test luôn	Em download TestFlight build từ link này test luôn
-Cái deep link tracking cos implement chưa?	Cái deep link tracking có implement chưa?
+Cái deep link tracking có implement chưa?	Cái deep link tracking có implement chưa?
 TestFlight hơi slow hôm nay, network issue hay gì?	TestFlight hơi slow hôm nay, network issue hay gì?
 Cần check app permissions trước khi submit tiếp	Cần check app permissions trước khi submit tiếp
 Ai setup Firebase crashlytics rồi? Cần nó để monitor	Ai setup Firebase crashlytics rồi? Cần nó để monitor
@@ -1196,7 +1196,7 @@ Bé mình bây giờ chỉ muốn ngủ trên người, nên bây giờ ôm bé 
 Postpartum recovery is no joke, take it easy para hindi complications, listen to your body talaga.	Postpartum recovery is no joke, take it easy para hindi complications, listen to your body talaga.
 Mình đã chuẩn bị hospital bag từ tuần thứ ba mươi sáu, better safe than sorry nha các mẹ.	Mình đã chuẩn bị hospital bag từ tuần thứ ba mươi sáu, better safe than sorry nha các mẹ.
 Feeding schedules with newborns is exhausting but necessary, track everything on your phone.	Feeding schedules with newborns is exhausting but necessary, track everything on your phone.
-Bạn nó nói rằng after birth cos period postpartum yang rất dài khoảng mười lăm ngày hôm.	Bạn nó nói rằng after birth có period postpartum yang rất dài khoảng mười lăm ngày hôm.
+Bạn nó nói rằng after birth có period postpartum yang rất dài khoảng mười lăm ngày hôm.	Bạn nó nói rằng after birth có period postpartum yang rất dài khoảng mười lăm ngày hôm.
 Sleep deprivation hit me like a truck, I barely remember what I did yesterday lol.	Sleep deprivation hit me like a truck, I barely remember what I did yesterday lol.
 Mua baby carrier ergonomic để vừa cầm bé vừa tự do tay làm chuyện khác, highly recommend.	Mua baby carrier ergonomic để vừa cầm bé vừa tự do tay làm chuyện khác, highly recommend.
 Diaper blowouts are real and they happen at the most inconvenient times possible honestly.	Diaper blowouts are real and they happen at the most inconvenient times possible honestly.
@@ -1269,7 +1269,7 @@ Music playlist cần planning kỹ, có DJ hay live band? Mình muốn vừa tra
 Bạn thử hỏi wedding planner về print quality, nên cardstock cao cấp chứ không giấy thường.	Bạn thử hỏi wedding planner về print quality, nên cardstock cao cấp chứ không giấy thường.
 Transportation cho khách cũng cần plan, especially nếu venue ở ngoài, mình nên arrange shuttle.	Transportation cho khách cũng cần plan, especially nếu venue ở ngoài, mình nên arrange shuttle.
 Pre-wedding photoshoot cũng đừng quên, có thể chọn địa điểm ưa thích của hai người.	Pre-wedding photoshoot cũng đừng quên, có thể chọn địa điểm ưa thích của hai người.
-Make-up artist cần tìm sớm, mình muốn trial make-up ít nhất hai lần trước ngày cưới.	Make-up artist cần tìm sớm, mình muốn trial make-up ít nhất hai lần trước ngày cưới.
+Make-up artist cần tìm sớm, mình muốn trial make-up its nhất hai lần trước ngày cưới.	Make-up artist cần tìm sớm, mình muốn trial make-up ít nhất hai lần trước ngày cưới.
 Bảng tên bàn, place card, menu card cần design sao cho match với thêm của đám cưới.	Bảng tên bàn, place card, menu card cần design sao cho match với theme của đám cưới.
 Guest book hay alternative ideas như signing glass panel hay canvas cũng cute lắm.	Guest book hay alternative ideas như signing glass panel hay canvas cũng cute lắm.
 Favors cho khách cũng quan trọng, có thể là candy, local product, hoặc handmade items.	Favors cho khách cũng quan trọng, có thể là candy, local product, hoặc handmade items.
@@ -1429,7 +1429,7 @@ Mình đang thử intermittent fasting kết hợp với running, body compositi
 The gym at 6am is the best time, no crowd and very chill environment.	The gym at 6am is the best time, no crowd and very chill environment.
 Chạy bộ quanh công viên sáng nay, gặp cả một nhóm runner khác nữa, community rất nice.	Chạy bộ quanh công viên sáng nay, gặp cả một nhóm runner khác nữa, community rất nice.
 Just realized I haven't missed a gym day in 6 weeks straight, discipline is key.	Just realized I haven't missed a gym day in 6 weeks straight, discipline is key.
-Tập gym ngày hôm qua push quá, hôm nay shoulder sore AF, need recovery day.	Tập gym ngày hôm qua push quá, hôm nay shoulder sore AF, need recovery day.
+Tập gym ngày hôm qua push quá, hôm nay shoulder sore À, need recovery day.	Tập gym ngày hôm qua push quá, hôm nay shoulder sore AF, need recovery day.
 Running shoes của tôi hết hạn sử dụng rồi, cần mua cái mới để avoid injury.	Running shoes của tôi hết hạn sử dụng rồi, cần mua cái mới để avoid injury.
 My personal record on the treadmill just got broken today, feeling accomplished honestly.	My personal record on the treadmill just got broken today, feeling accomplished honestly.
 Mình bắt đầu fitness journey từ 2024, weight giảm nhưng energy level tăng gấp đôi.	Mình bắt đầu fitness journey từ 2024, weight giảm nhưng energy level tăng gấp đôi.
@@ -1689,7 +1689,7 @@ Production quality của phim Korean ngày nay thực sự vượt trội so v�
 I'm currently on my third rewatch of Breaking Bad, it's just that good honestly.	I'm currently on my third rewatch of Breaking Bad, it's just that good honestly.
 Avatar 2 thực sự là technological masterpiece, đáng xem ở rạp lớn nhất.	Avatar 2 thực sự là technological masterpiece, đáng xem ở rạp lớn nhất.
 Phim Việt trên Netflix đôi khi khá ấn tượng, nhưng majority vẫn hơi weak.	Phim Việt trên Netflix đôi khi khá ấn tượng, nhưng majority vẫn hơi weak.
-Tá hoả luôn khi thấy Barbie movie trailer, không biết Will Ferrell sex ra sao.	Tá hoả luôn khi thấy Barbie movie trailer, không biết Will Ferrell sẽ ra sao.
+Tá hoả luôn khi thấy Barbie movie trailer, không biết Will Ferrell sẽ ra sao.	Tá hoả luôn khi thấy Barbie movie trailer, không biết Will Ferrell sẽ ra sao.
 Phim Nhật Bản trên Netflix lúc này khá solid, đáng để bỏ công xem.	Phim Nhật Bản trên Netflix lúc này khá solid, đáng để bỏ công xem.
 I tried watching everything on Netflix's top 10 but some of them are just filler content.	I tried watching everything on Netflix's top 10 but some of them are just filler content.
 Phim sci-fi trên Netflix năm nay khá meh, không có gì impressive lắm.	Phim sci-fi trên Netflix năm nay khá meh, không có gì impressive lắm.
@@ -1726,7 +1726,7 @@ V-pop ballad thì thường hay hơn V-pop dance, lyrically sâu sắc hơn và 
 Mình nghe cả hai, K-pop vì production, V-pop vì text and cultural connection with the music.	Mình nghe cả hai, K-pop vì production, V-pop vì text and cultural connection with the music.
 Có mấy bài V-pop cover K-pop khá ấn tượng, nhưng original vẫn hay hơn do sự authentic.	Có mấy bài V-pop cover K-pop khá ấn tượng, nhưng original vẫn hay hơn do sự authentic.
 V-pop đang có trend mới lạ, blend giữa trap và traditional Vietnamese instruments, pretty creative actually.	V-pop đang có trend mới lạ, blend giữa trap và traditional Vietnamese instruments, pretty creative actually.
-Kpop idols cos photoshoot professional, makeup chuẩn chỉnh, trong khi V-pop sometimes looks a bit amateur.	Kpop idols có photoshoot professional, makeup chuẩn chỉnh, trong khi V-pop sometimes looks a bit amateur.
+Kpop idols có photoshoot professional, makeup chuẩn chỉnh, trong khi V-pop sometimes looks a bit amateur.	Kpop idols có photoshoot professional, makeup chuẩn chỉnh, trong khi V-pop sometimes looks a bit amateur.
 Nghe K-pop trên Spotify algorithm khá OK, nhưng V-pop playlists sometimes feel incomplete or poorly curated.	Nghe K-pop trên Spotify algorithm khá OK, nhưng V-pop playlists sometimes feel incomplete or poorly curated.
 Mình prefer V-pop vocals vì natural hơn, K-pop idols trained quá nhiều nên vocals nó auto-tuned heavily.	Mình prefer V-pop vocals vì natural hơn, K-pop idols trained quá nhiều nên vocals nó auto-tuned heavily.
 Korean music industry có hệ thống training rigorous, V-pop artists ngược lại tìm tòi cách riêng của mình.	Korean music industry có hệ thống training rigorous, V-pop artists ngược lại tìm tòi cách riêng của mình.
@@ -1935,7 +1935,7 @@ Văn phòng ngực quá, cái desk mình chỉ vừa laptop và một cái tách
 Lương tháng này delayed hai tuần, công ty nói cash flow problem nhưng vẫn support event lớn.	Lương tháng này delayed hai tuần, công ty nói cash flow problem nhưng vẫn support event lớn.
 The work culture here is toxic, people backstabbing each other để promotion, environment rất unhealthy.	The work culture here is toxic, people backstabbing each other để promotion, environment rất unhealthy.
 Mỗi tháng lại có một cái meeting về productivity nhưng không ai thay đổi process, vô ích.	Mỗi tháng lại có một cái meeting về productivity nhưng không ai thay đổi process, vô ích.
-Công việc lặp lại ngày ngày, không có skill development, chỉ execute same tasks, boring af.	Công việc lặp lại ngày ngày, không có skill development, chỉ execute same tasks, boring af.
+Công việc lặp lại ngày ngày, không có skill development, chỉ execute same tasks, boring à.	Công việc lặp lại ngày ngày, không có skill development, chỉ execute same tasks, boring af.
 Sếp không bao giờ compliment gì, chỉ nói sai, feedback culture ở đây rất negative.	Sếp không bao giờ compliment gì, chỉ nói sai, feedback culture ở đây rất negative.
 Văn phòng này mỗi trưa lại có mùi ăn từ các phòng khác, mùi tanh hôi, appetite kill.	Văn phòng này mỗi trưa lại có mùi ăn từ các phòng khác, mùi tanh hôi, appetite kill.
 Mình vừa gửi CV đi 50 chỗ rồi, chờ được call interview là chưa biết bao giờ.	Mình vừa gửi CV đi 50 chỗ rồi, chờ được call interview là chưa biết bao giờ.
@@ -2175,7 +2175,7 @@ Crypto winter đang kết thúc, signal rõ ràng rồi theo mình.	Crypto winte
 Mua dip ngày hôm qua, hôm nay đã green rồi, timing tốt.	Mua dip ngày hôm qua, hôm nay đã green rồi, timing tốt.
 Tether dominance giảm, altseason có thể bắt đầu sắp tới rồi.	Tether dominance giảm, altseason có thể bắt đầu sắp tới rồi.
 DCA strategy em dùng hiệu quả hơn là try-hard trading mỗi ngày.	DCA strategy em dùng hiệu quả hơn là try-hard trading mỗi ngày.
-Inflation data tuần sau sẽ influence car stock lẫn crypto market lớn.	Inflation data tuần sau sẽ influence cả stock lẫn crypto market lớn.
+Inflation data tuần sau sẽ influence cả stock lẫn crypto market lớn.	Inflation data tuần sau sẽ influence cả stock lẫn crypto market lớn.
 Treasury yields up, market down, rotation sang safe assets đang happen.	Treasury yields up, market down, rotation sang safe assets đang happen.
 Whale wallet vừa move Bitcoin, usually signal chuyển động giá mà.	Whale wallet vừa move Bitcoin, usually signal chuyển động giá mà.
 Staking rewards crypto khá good return, beat stock dividend rate nhiều.	Staking rewards crypto khá good return, beat stock dividend rate nhiều.
@@ -2460,7 +2460,7 @@ Cần mua thêm memory card 128GB cho shoot hôm sau, chắc là SanDisk Extreme
 Học về composition rules, especially rule of thirds và leading lines	Học về composition rules, especially rule of thirds và leading lines
 Cần tìm location tốt để chụp ảnh street photography ở Hà Nội	Cần tìm location tốt để chụp ảnh street photography ở Hà Nội
 Practice manual focus vì autofocus không được tốt lắm trong lơ light	Practice manual focus vì autofocus không được tốt lắm trong low light
-Đặt order lens Sigma 35mm f/1.4, mong đợi lắm cái này	Đặt order lens Sigma 35mm f/1.4, mong đợi lắm cái này
+Đặt order lén Sigma 35mm f/1.4, mong đợi lắm cái này	Đặt order lens Sigma 35mm f/1.4, mong đợi lắm cái này
 Study color grading trong Lightroom, want to develop my own style	Study color grading trong Lightroom, want to develop my own style
 Mua replacement batteries vì cái cũ hết pin rất nhanh	Mua replacement batteries vì cái cũ hết pin rất nhanh
 Upload photos to portfolio website, update the gallery section	Upload photos to portfolio website, update the gallery section
@@ -2580,7 +2580,7 @@ Security system phòng ổn định, mình cảm thấy safe lúc nào.	Security
 The neighborhood is vibrant with local restaurants and cafes, perfect untuk explore.	The neighborhood is vibrant with local restaurants and cafes, perfect untuk explore.
 Quạt phòng gây tiếng ồn, mình tắt nó nhưng nóng quá, dilemma.	Quạt phòng gây tiếng ồn, mình tắt nó nhưng nóng quá, dilemma.
 Deposit policy của host rất reasonable, return money quick after checkout.	Deposit policy của host rất reasonable, return money quick after checkout.
-AC unit cos issue, took two days để fix, inconvenient but fixed eventually.	AC unit có issue, took two days để fix, inconvenient but fixed eventually.
+AC unit có issue, took two days để fix, inconvenient but fixed eventually.	AC unit có issue, took two days để fix, inconvenient but fixed eventually.
 Cắn rỉ trên bed frame, mình kiếm được bug trong mattress, very unhygienic.	Cắn rỉ trên bed frame, mình kiếm được bug trong mattress, very unhygienic.
 Amenities nice but some not working, bathroom exhaust fan bị hỏng từ khi mình check-in.	Amenities nice but some not working, bathroom exhaust fan bị hỏng từ khi mình check-in.
 Mình book hotel Novotel lần trước, breakfast buffet ngon nhưng wifi tệ, cộng thêm tạp âm từ phòng bên cạnh.	Mình book hotel Novotel lần trước, breakfast buffet ngon nhưng wifi tệ, cộng thêm tạp âm từ phòng bên cạnh.
@@ -2590,7 +2590,7 @@ Airbnb ở Bình Thạnh rất tốt, sạch sẽ, hót để sẵn nước, bá
 Mình suggest booking direct với hotel, cheaper than Booking.com hay Expedia, staff còn tốt hơn nữa.	Mình suggest booking direct với hotel, cheaper than Booking.com hay Expedia, staff còn tốt hơn nữa.
 Phòng hotel đơn giản nhưng sạch sẽ, nhân viên lễ tân tận tình, có thể cải thiện phần âm thanh.	Phòng hotel đơn giản nhưng sạch sẽ, nhân viên lễ tân tận tình, có thể cải thiện phần âm thanh.
 Hotel gần sân bay hơi ồn ào nhưng tiện cho business traveler, có shuttle service, front desk 24/7.	Hotel gần sân bay hơi ồn ào nhưng tiện cho business traveler, có shuttle service, front desk 24/7.
-The entire property felt run-down, paint peeling off walls, carpet stained, definitely not worth the price tag.	The entire property felt run-down, paint peeling off walls, carpet stained, definitely not worth the price tag.
+The entire property felt run-dơn, paint peeling off walls, carpet stained, definitely not worth the price tag.	The entire property felt run-down, paint peeling off walls, carpet stained, definitely not worth the price tag.
 Booking.com rating cao nhưng khi vào phòng thì hơi khác, nước nóng không đủ, ải-con cũ.	Booking.com rating cao nhưng khi vào phòng thì hơi khác, nước nóng không đủ, air-con cũ.
 Phòng hotel hơi compact nhưng layout được thiết kế khéo, toilet hiện đại, amenities đầy đủ, good value.	Phòng hotel hơi compact nhưng layout được thiết kế khéo, toilet hiện đại, amenities đầy đủ, good value.
 This place has the friendliest staff I've ever encountered, they went above and beyond to help us.	This place has the friendliest staff I've ever encountered, they went above and beyond to help us.

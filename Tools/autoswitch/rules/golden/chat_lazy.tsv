@@ -74,7 +74,7 @@ em nghĩ feature X không cần phải launch cùng version 1.0, delay sang q4 �
 có ai review cái proposal này chưa, deadline vote sáng mai	có ai review cái proposal này chưa, deadline vote sáng mai
 dependency giữa team frontend và backend cần clarify lại	dependency giữa team frontend và backend cần clarify lại
 Let me share the updated product roadmap with timeline and owners	Let me share the updated product roadmap with timeline and owners
-acquisition strategy cần shift từ paid sang organic, bdd cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
+acquisition strategy cần shift từ paid sang organic, bđ cost quá cao	acquisition strategy cần shift từ paid sang organic, bđ cost quá cao
 retention metric là indicator chính, phải focus vào cái này trước	retention metric là indicator chính, phải focus vào cái này trước
 mình check lại data, DAU tăng nhưng engagement rate không tăng	mình check lại data, DAU tăng nhưng engagement rate không tăng
 monthly recurring revenue target là 100k, hiện tại 65k	monthly recurring revenue target là 100k, hiện tại 65k
@@ -535,7 +535,7 @@ CTE nó sẽ giúp query dễ đọc hơn và có thể nhanh hơn	CTE nó sẽ 
 Ừ, mình vừa thử xong, query chạy chỉ còn 20 giây thôi	Ừ, mình vừa thử xong, query chạy chỉ còn 20 giây thôi
 OK được rồi, mình refactor lại dashboard vì data mới đã ready	OK được rồi, mình refactor lại dashboard vì data mới đã ready
 Dashboard nào bạn? Cái dashboard sales hay cái dashboard ops?	Dashboard nào bạn? Cái dashboard sales hay cái dashboard ops?
-Cái dashboard tổng quan cho management as, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
+Cái dashboard tổng quan cho management á, 3 cái chart chính	Cái dashboard tổng quan cho management á, 3 cái chart chính
 Mình vừa update data source, giờ nó pull từ data warehouse	Mình vừa update data source, giờ nó pull từ data warehouse
 Tốt rồi, bạn refresh dashboard đi, dùng cái new query mình gửi	Tốt rồi, bạn refresh dashboard đi, dùng cái new query mình gửi
 Bạn gửi cho mình cái query đó được không? mình đưa vào dashboard	Bạn gửi cho mình cái query đó được không? mình đưa vào dashboard
@@ -710,7 +710,7 @@ Have you tested the app on iPhone SE yet?	Have you tested the app on iPhone SE y
 Phiên bản này optimization tốt hơn version trước nhiều	Phiên bản này optimization tốt hơn version trước nhiều
 Phải wait app store review khoảng mấy ngày thường	Phải wait app store review khoảng mấy ngày thường
 Em download TestFlight build từ link này test luôn	Em download TestFlight build từ link này test luôn
-Cái deep link tracking cos implement chưa?	Cái deep link tracking có implement chưa?
+Cái deep link tracking có implement chưa?	Cái deep link tracking có implement chưa?
 The rejection reason is related to user data handling, I'll fix it ASAP	The rejection reason is related to user data handling, I'll fix it ASAP
 Mình có 10 testers sẵn sàng, pass link TestFlight đi	Mình có 10 testers sẵn sàng, pass link TestFlight đi
 TestFlight hơi slow hôm nay, network issue hay gì?	TestFlight hơi slow hôm nay, network issue hay gì?
