@@ -1323,9 +1323,13 @@ struct AsRwPrev { bool valid = false; Uint32 keys[AS_KEY_LEN]; int n, shown, typ
 static AsRwPrev _rwPrev;   //D63: the word before the current one, for a second look (asFixPreviousWord)
 void vAutoFixForgetPrevious();
 static int _ctxPrev = -1;   //D63: the word before the current one (its id in the context table), for typo fixes (see asContextBonus)
+static int _asEnglishRun = 0;   //English words in a row typed in Vietnamese mode (see vAutoSwitchStaysVietnamese)
+static bool _asLineVietnamese = false;   //a Vietnamese word since the last Enter, click or switch
+static bool _asLineVietnamesePending = false;   //the word that brings Vietnamese mode back (kept over vAutoSwitchForget)
 void vAutoSwitchForget() {
     _asPrevCount = 0;
-    _ctxPrev = -1; vAutoFixForgetPrevious();
+    _ctxPrev = -1; vAutoFixForgetPrevious(); _asEnglishRun = 0;
+    _asLineVietnamese = _asLineVietnamesePending; _asLineVietnamesePending = false;
     _asWordStartOk = true;   //a fresh context (language switched, app changed): the next word stands on its own
     _spaceCount = 0; _specialChar.clear(); _typingStates.clear();   //and Backspace can't reopen a word from before it
     if (_asConvertedN > 0) {   //except the word auto switch just turned Vietnamese: it is on screen before the break key,
@@ -1860,6 +1864,11 @@ static void asRestoreToEnglish(const int& handleCode) {
  *  ("taijq", "noiwps"): put the keys back but stay in Vietnamese, so the next words aren't typed in English.
  *  Backspace right after still gives the word as it was (the platforms' auto-fix undo). */
 int vAutoSwitchTypoStaysVietnamese = 1;
+#ifndef AS_STAY_VN
+#define AS_STAY_VN 2     //D64
+#endif
+int vAutoSwitchStaysVietnamese = AS_STAY_VN;   //English words in a row before Vietnamese mode gives way (0: the first one switches)
+
 static void asStayVietnamese() {
     if (!vAutoSwitchTypoStaysVietnamese) return;
     vAutoSwitchRequest = -1;
@@ -1886,7 +1895,7 @@ struct AsEngineState {
     vector<Uint32> longWord, special, statesData;
     list<vector<Uint32>> typing;
     vKeyHookState hook;
-    int ctxPrev = -1; AsRwPrev rwPrev;   //D63: only the test snapshots (vTestSaveState) keep these: replays type no spaces
+    int ctxPrev = -1; AsRwPrev rwPrev; int englishRun = 0; bool lineVietnamese = false;   //D63: only the test snapshots (vTestSaveState) keep these: replays type no spaces
 };
 
 static void asSaveState(AsEngineState& st) {
@@ -1923,8 +1932,8 @@ static void asRestoreState(AsEngineState& st) {
 
 #ifdef AS_TESTING
 //test harness only: snapshot the whole engine so a word can be tried and taken back
-void* vTestSaveState() { AsEngineState* st = new AsEngineState(); asSaveState(*st); st->ctxPrev = _ctxPrev; st->rwPrev = _rwPrev; return st; }
-void vTestRestoreState(void* p) { AsEngineState* st = (AsEngineState*)p; asRestoreState(*st); _ctxPrev = st->ctxPrev; _rwPrev = st->rwPrev; delete st; }
+void* vTestSaveState() { AsEngineState* st = new AsEngineState(); asSaveState(*st); st->ctxPrev = _ctxPrev; st->rwPrev = _rwPrev; st->englishRun = _asEnglishRun; st->lineVietnamese = _asLineVietnamese; return st; }
+void vTestRestoreState(void* p) { AsEngineState* st = (AsEngineState*)p; asRestoreState(*st); _ctxPrev = st->ctxPrev; _rwPrev = st->rwPrev; _asEnglishRun = st->englishRun; _asLineVietnamese = st->lineVietnamese; delete st; }
 void vTestFreeState(void* p) { delete (AsEngineState*)p; }
 #endif
 
@@ -1965,8 +1974,16 @@ static bool asFewCapitals(const Uint32* keys, const int& count) {
     return capitals < 2;   //USA, EST, IRS, camelCase: acronyms and identifiers stay as typed
 }
 
+static bool asCheckEnglishWordCore(const Uint32* keys, const int& count,
+                                   const Uint32* const* previous, const int* previousCounts, const int& previousN);
 bool vAutoSwitchCheckEnglishWord(const Uint32* keys, const int& count,
                                  const Uint32* const* previous, const int* previousCounts, const int& previousN) {
+    bool converted = asCheckEnglishWordCore(keys, count, previous, previousCounts, previousN);
+    if (converted) _asLineVietnamesePending = true;   //Vietnamese mode comes back on a Vietnamese word: the line has one
+    return converted;
+}
+static bool asCheckEnglishWordCore(const Uint32* keys, const int& count,
+                                   const Uint32* const* previous, const int* previousCounts, const int& previousN) {
     if (!asEnabled() || count < 2 || count >= MAX_BUFF - 1) return false;
     asInitLetters();
     char raw[AS_KEY_LEN];
@@ -2661,6 +2678,15 @@ static int _navOffset = 0;      //how far left of the word's end the cursor is (
 static int _navPrevCount = 0;  //the look-back words (they're before the word's end, not before the cursor while away)
 static void navForget() { if (_navSaved) { delete _navSaved; _navSaved = NULL; } _navOffset = 0; }
 
+/** The current word shows Vietnamese marks (â ă ê ô ơ ư đ or a tone) and its keys are no English word: Vietnamese for sure. */
+static bool asWordIsSurelyVietnamese() {
+    bool marks = false;
+    for (int x = 0; x < _index; x++) if (TypingWord[x] & (TONE_MASK | TONEW_MASK | MARK_MASK)) marks = true;
+    if (!marks) return false;
+    char raw[AS_KEY_LEN];   //and the keys aren't an English word too ("this" read as thí until the next word)
+    asInitLetters();
+    return asRawWord(KeyStates, _stateIndex, raw) && asEnglishScore(raw) == AS_MISSING;
+}
 void vKeyHandleEvent(const vKeyEvent& event,
                      const vKeyEventState& state,
                      const Uint16& data,
@@ -2703,6 +2729,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
         bool english = switchBreak && asShouldRestoreToEnglish();
         bool unknownWord = english && _asRestoreUnknown;
         bool typoFixed = switchBreak && asFixTypo(vRestoreAndStartNewSession, english && !unknownWord);   //a Telex typo: the word one key away (D60)
+        if (switchBreak && (!english || typoFixed)) { _asEnglishRun = 0; if (asWordIsSurelyVietnamese()) _asLineVietnamese = true; }
         bool asSwitch = !typoFixed && (english ||
                         (data == KEY_MINUS && capsStatus != 1 && !otherControlKey && _spaceCount == 0 && asHyphenRestore()));   //a hyphen after a space isn't part of the word ("wr -" gave "wr wr-", D52)
         _asApostrophe = false;
@@ -2710,7 +2737,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
             //a Telex typo: the word one key away (D60)
         } else if (asSwitch) {
             asRestoreToEnglish(vRestoreAndStartNewSession); //auto switch: an English word typed in Vietnamese mode
-            if (unknownWord) asStayVietnamese();
+            if (unknownWord || (_asLineVietnamese && data != KEY_MINUS && ++_asEnglishRun < vAutoSwitchStaysVietnamese)) asStayVietnamese();   //an English compound goes on in English
         } else if (vRestoreIfWrongSpelling && isWordBreak(event, state, data)) { //restore key if wrong spelling with break-key
             if (!tempDisableKey && vCheckSpelling) {
                 checkSpelling(true); //force check spelling
@@ -2743,6 +2770,7 @@ void vKeyHandleEvent(const vKeyEvent& event,
         //the next word is a whole word only after whitespace, a click, a shortcut or an opening ( [ { " ',
         //not after . _ - / etc.
         _afterDigit = IS_NUMBER_KEY(data) && capsStatus != 1;
+        if (event == vKeyEvent::Mouse || data == KEY_ENTER || data == KEY_RETURN) _asLineVietnamese = false;   //a new line or place
         _asWordStartOk = event == vKeyEvent::Mouse || otherControlKey || data == KEY_ENTER || data == KEY_RETURN || data == KEY_TAB ||
                          (data == KEY_9 && capsStatus == 1) || data == KEY_LEFT_BRACKET || data == KEY_QUOTE;
     } else if (data == KEY_SPACE) {
@@ -2753,11 +2781,12 @@ void vKeyHandleEvent(const vKeyEvent& event,
         bool english = asShouldRestoreToEnglish();
         bool unknownWord = english && _asRestoreUnknown;
         bool typoFixed = asFixTypo(vRestore, english && !unknownWord);
+        if (!english || typoFixed) { _asEnglishRun = 0; if (asWordIsSurelyVietnamese()) _asLineVietnamese = true; }
         if (typoFixed) { //a Telex typo: the word one key away (D60)
             _spaceCount++;
         } else if (english) { //auto switch: an English word typed in Vietnamese mode
             asRestoreToEnglish(vRestore);
-            if (unknownWord) asStayVietnamese();
+            if (unknownWord || (_asLineVietnamese && ++_asEnglishRun < vAutoSwitchStaysVietnamese)) asStayVietnamese();
             _spaceCount++;
         } else if (vRestoreIfWrongSpelling && tempDisableKey) { //restore key if wrong spelling
             if (!checkRestoreIfWrongSpelling(vRestore)) {

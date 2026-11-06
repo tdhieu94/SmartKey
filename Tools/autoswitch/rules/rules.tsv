@@ -106,7 +106,7 @@ D27	1	meme 	meme 	0	English used in Vietnamese chat (en_extra)
 D27	1	xin visa 	xin visa 	0	a formal-only syllable (vía) loses to the English word people mean
 D28	0	aj 	ạ 	1	"aj" is no English word (subtitle junk): the particle ạ, also after English ("esports ạ")
 D30	1	cho con bus 	cho con bú 	1	word pairs: bú follows "con" far more often than bus
-D30	1	ddi xe bus 	đi xe bus 	0	"xe bus" is a common pair: English
+D30	1	ddi xe bus 	đi xe bus 	1	"xe bus" is a common pair: English; Vietnamese stays on after one English word in a Vietnamese line (D64)
 D30	0	the bus 	the bus 	0	"the bus" stays English
 D30	1	owr been 	ở bên 	1	"ở bên" (Vietnamese), not "been"
 D30	1	sang mix 	sang mĩ 	1	"sang mĩ" (to the US)
@@ -114,7 +114,7 @@ D30	1	cachs mix ddoof 	cách mix đồ 	1	"cách mix" (how to mix outfits): Engl
 D33	1	mua 1casi 	mua 1cái 	1	digits after a space start a new word: Telex works on the letters after them
 D33	1	abc1def 	abc1def 	1	digits glued to letters: a code, left alone
 D33	1	sacj 2w 	sạc 2w 	1	a lone w right after a digit is a unit (W), not ư
-D34	0	test cos work 	test có work 	0	a word pair that is clearly Vietnamese (10x) beats D22 ("right after an English word, a tie stays English")
+D34	0	test cos work 	test có work 	1	a word pair that is clearly Vietnamese (10x) beats D22 ("right after an English word, a tie stays English"); Vietnamese stays on after one English word in a Vietnamese line (D64)
 D35	1	vaof office its nhaats 	vào office ít nhất 	1	look-forward: a word put back to English flips to Vietnamese when the next word makes it clear (ít nhất)
 D39	1	ddi DDaf Nawngx 	đi Đà Nẵng 	1	DD is one letter (Đ): a word starting with it has one capital, not an acronym (DDR, DDoS keep two)
 D39	0	DDR4 DDoS 	DDR4 DDoS 	0	the D39 Đ rule keeps real acronyms
@@ -122,7 +122,7 @@ D40	1	see you owr DDaf Nawngx 	see you ở Đà Nẵng 	1	"sê" is not a Vietnam
 D41	0	THOONG 	THÔNG 	1	a lone all-caps word marked as Telex (doubled vowel, w after a vowel) converts in English mode
 D41	0	THUOWNGF VIEETJ 	THƯỜNG VIỆT 	1	the same, two words
 D41	0	HW IRS USA NASA 	HW IRS USA NASA 	0	unmarked acronyms stay as typed
-D42	1	e lieen heej been ASL 	e liên hệ bên ASL 	0	an acronym put back to its keys does not flip the word before it (bên ASL, not been ASL)
+D42	1	e lieen heej been ASL 	e liên hệ bên ASL 	1	an acronym put back to its keys does not flip the word before it (bên ASL, not been ASL); Vietnamese stays on after one English word in a Vietnamese line (D64)
 D42	1	been USA 	bên USA 	0	the same with an acronym that is an English word
 D48	1	la voiws os 	la với ó 	1	lowercase os in Vietnamese is ó (Tony); OS the acronym is typed in caps
 D48	0	the os is 	the os is 	0	in English, os stays
@@ -178,3 +178,7 @@ D63	1	bajn cos thowf gian 	bạn có thời gian 	1	a key left out of a real wor
 D63	1	tooif teej 	tồi tệ 	1	a word real text has next to its neighbours stays (no before word: nothing to compare)
 D63	1	caauf loong laf 	cầu lông là 	1	one neighbour alone never fixes a word (lông stays, not ông)
 D63	1	ddi trongj soos 	đi trọng số 	1	a fix that only changes the tone is never made (trọng stays, not trong)
+
+D64	1	minhf test cos bug 	mình test có bug 	1	after a Vietnamese word, one English word keeps Vietnamese mode: the next Vietnamese word needs no switch (Hieu)
+D64	1	minhf push code nos chajy 	mình push code nó chạy 	1	two English words in a row: still Vietnamese, the next word is typed in Vietnamese
+D64	1	this makes 	this makes 	0	a line with no sure Vietnamese word yet: the first English word switches as before

@@ -1,6 +1,2 @@
-- Gõ nhầm một từ (không phải tiếng Việt, cũng không phải tiếng Anh) không còn làm SmartKey chuyển sang tiếng Anh: từ đó giữ nguyên phím đã gõ, các từ sau vẫn có dấu
-- Những từ gõ nhầm như vậy cũng được tự sửa: bajnn → bạn
-- Bấm Backspace ngay sau đó để lấy lại chữ như lúc gõ
-- Sửa lỗi gõ theo ngữ cảnh: SmartKey xem từ đứng trước và đứng sau để chọn đúng từ (duwj ddosn → dự đoán, không phải dự đón)
-- Gõ nhầm thành một từ có nghĩa khác cũng được sửa khi gõ xong từ tiếp theo: ngày gôm qua → ngày hôm qua, có thờ gian → có thời gian
-- Dữ liệu ngữ cảnh nằm sẵn trong máy, không gửi gì lên mạng
+- Gõ một từ tiếng Anh giữa câu tiếng Việt không còn làm SmartKey chuyển hẳn sang tiếng Anh: từ tiếng Việt tiếp theo có dấu ngay, không cần bấm chuyển (mình test cos bug → mình test có bug)
+- Chỉ khi gõ liền hai từ tiếng Anh, hoặc câu chưa có từ tiếng Việt nào, SmartKey mới chuyển sang tiếng Anh như trước
