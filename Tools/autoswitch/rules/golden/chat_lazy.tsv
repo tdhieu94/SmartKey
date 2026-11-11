@@ -1013,7 +1013,7 @@ Chưa, plan test tuần tới. Estimate 50k requests/sec
 50
 k/sec là khá aggressive. Better stress test thoroughly	k/sec là khá aggressive. Better stress test thoroughly
 Mình biết. Đã allocate budget testing cho Q4	Mình biết. Đã allocate budget testing cho Q4
-Cost estimation cos finalize chưa? Presentation cần exact numbers	Cost estimation có finalize chưa? Presentation cần exact numbers
+Cost estimation có finalize chưa? Presentation cần exact numbers	Cost estimation có finalize chưa? Presentation cần exact numbers
 Not finalized yet. Waiting for cloud pricing confirmation	Not finalized yet. Waiting for cloud pricing confirmation
 Bao giờ confirm được? Investor meeting tuần sau rồi	Bao giờ confirm được? Investor meeting tuần sau rồi
 By Friday. Asking cloud team expedite quote	By Friday. Asking cloud team expedite quote
@@ -1040,7 +1040,7 @@ retention ở month 1 là normal. Mục tiêu là 45  month 3	retention ở mont
 Vậy onboarding flow có optimize được không?	Vậy onboarding flow có optimize được không?
 Optimize rồi. Reduced steps from 8 to 4. A/B testing đang run	Optimize rồi. Reduced steps from 8 to 4. A/B testing đang run
 Kết quả như thế nào?	Kết quả như thế nào?
-Variant with 4 steps cos 35  higher completion rate. Significant	Variant with 4 steps có 35  higher completion rate. Significant
+Variant with 4 steps có 35  higher completion rate. Significant	Variant with 4 steps có 35  higher completion rate. Significant
 Excellent results. Let's ship this immediately	Excellent results. Let's ship this immediately
 Ê mấy bạn, mình định đi Đà Lạt tháng 11, các bạn có muốn không?	Ê mấy bạn, mình định đi Đà Lạt tháng 11, các bạn có muốn không?
 Ôi hay lắm, mình rất muốn đi lúc này vì thời tiết đẹp	Ôi hay lắm, mình rất muốn đi lúc này vì thời tiết đẹp
@@ -1180,7 +1180,7 @@ hay là chúng ta nên A/B test cái headline này	hay là chúng ta nên A/B te
 có thể adjust budget allocation không, performance còn yếu	có thể adjust budget allocation không, performance còn yếu
 mấy cái video ads không convert tốt, có thể do creative	mấy cái video ads không convert tốt, có thể do creative
 Mình suggest chúng ta focus vào organic reach trước	Mình suggest chúng ta focus vào organic reach trước
-Performance marketing campaign nos ra sao	Performance marketing campaign nó ra sao
+Performance marketing campaign nó ra sao	Performance marketing campaign nó ra sao
 chỉnh sửa xong rồi, xin feedback từ creative director	chỉnh sửa xong rồi, xin feedback từ creative director
 We're getting good engagement but CTR is still low	We're getting good engagement but CTR is still low
 ad spend vs revenue ratio hiện tại bao nhiêu nhân	ad spend vs revenue ratio hiện tại bao nhiêu nhân
@@ -1480,7 +1480,7 @@ ETL schedule hôm qua có chạy không?	ETL schedule hôm qua có chạy không
 Chưa, pipeline fail từ sáng rồi	Chưa, pipeline fail từ sáng rồi
 Fix xong chưa? Cần report cho boss hôm nay	Fix xong chưa? Cần report cho boss hôm nay
 Just fixed it, running again now	Just fixed it, running again now
-Dashboard cos update data chưa?	Dashboard có update data chưa?
+Dashboard có update data chưa?	Dashboard có update data chưa?
 Waiting for the ETL to finish	Waiting for the ETL to finish
 Thường mất bao lâu nhỉ?	Thường mất bao lâu nhỉ?
 Depends on how much data we're processing, usually 2-3 hours	Depends on how much data we're processing, usually 2-3 hours

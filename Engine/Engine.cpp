@@ -2036,7 +2036,10 @@ static bool asCheckEnglishWordCore(const Uint32* keys, const int& count,
 #ifndef AS_PAIR_OVERRIDES_D22
 #define AS_PAIR_OVERRIDES_D22 10   //word pairs this sure of the Vietnamese reading (10x) beat D22: "team bên US" (D34)
 #endif
-    if (en != AS_MISSING && previousN >= 1 && previousCounts[0] >= 1 && pairVote < AS_PAIR_OVERRIDES_D22 && !vAutoSwitchPrevRestored && capVote < AS_CAP_MARGIN) {
+#ifndef AS_CLEAR_OVERRIDES_D22
+#define AS_CLEAR_OVERRIDES_D22 25   //a word far more common as Vietnamese is no tie (D65): "type cos" -> có, "booking system nos" -> nó
+#endif
+    if (en != AS_MISSING && vn - en + pairVote < AS_CLEAR_OVERRIDES_D22 && previousN >= 1 && previousCounts[0] >= 1 && pairVote < AS_PAIR_OVERRIDES_D22 && !vAutoSwitchPrevRestored && capVote < AS_CAP_MARGIN) {
         char praw[AS_KEY_LEN];
         Uint32 tmp[MAX_BUFF]; int tmpCount;
         if (asRawWord(previous[0], previousCounts[0], praw)) {

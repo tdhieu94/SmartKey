@@ -86,7 +86,7 @@ D20	1	(tooi ddi 	(tôi đi 	1	Vietnamese in parentheses stays Vietnamese
 D22	0	Hey guys, cos ai ddi khoong 	Hey guys, có ai đi không 	1	EN mode: a tie converts when the Vietnamese reading is 10x+ more common (có vs cos) (Tony, option A)
 D22	0	crypto nos volatile 	crypto nó volatile 	1	same: nó vs nos
 D22	0	the theme of rust 	the theme of rust 	0	but never right after a clearly English word (D5.3 kept)
-D22	0	video call cos 	video call cos 	0	same: cos after "call" stays English
+D22	0	video call cos 	video call có 	1	cos after "call": far more common as có than as English, so no tie since D65 (was: stays English)
 D22	1	video call this 	video call this 	0	VN mode: a tie leaning English (3x+) right after a clearly English word goes English ("thí" -> this)
 D23	1	NAS 	NAS 	0	2+ capitals that Telex made into a rare or invalid syllable: an acronym, keys put back (NÁ -> NAS)
 D23	1	ASUS 	ASUS 	0	same with a doubled tone key: the capitals keep both presses
@@ -182,3 +182,6 @@ D63	1	ddi trongj soos 	đi trọng số 	1	a fix that only changes the tone is n
 D64	1	minhf test cos bug 	mình test có bug 	1	after a Vietnamese word, one English word keeps Vietnamese mode: the next Vietnamese word needs no switch (Hieu)
 D64	1	minhf push code nos chajy 	mình push code nó chạy 	1	two English words in a row: still Vietnamese, the next word is typed in Vietnamese
 D64	1	this makes 	this makes 	0	a line with no sure Vietnamese word yet: the first English word switches as before
+D65	0	RDS instance type cos 	RDS instance type có 	1	in English mode a word far more common as Vietnamese converts even right after English words (Hieu)
+D65	0	booking system nos chajy 	booking system nó chạy 	1	same for nos -> nó
+D65	0	the theme of rust 	the theme of rust 	0	a real tie (theme) still stays English after English words (D22)
