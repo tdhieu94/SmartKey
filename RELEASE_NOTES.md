@@ -1,2 +1,1 @@
-- Gõ một từ tiếng Anh giữa câu tiếng Việt không còn làm SmartKey chuyển hẳn sang tiếng Anh: từ tiếng Việt tiếp theo có dấu ngay, không cần bấm chuyển (mình test cos bug → mình test có bug)
-- Chỉ khi gõ liền hai từ tiếng Anh, hoặc câu chưa có từ tiếng Việt nào, SmartKey mới chuyển sang tiếng Anh như trước
+- Sau một câu mở đầu bằng tiếng Anh, các từ tiếng Việt hay dùng như có, nó, tốt, rõ (gõ cos, nos, toots, rox) tự chuyển về tiếng Việt, không cần bấm chuyển: "RDS instance type cos" → "RDS instance type có"

@@ -5,6 +5,18 @@ Each entry records what was asked, what was decided, and its status. Newest firs
 
 Status values: **Shipped** (in a build Tony has), **Agreed** (decided, not built yet), **Rejected**.
 
+## 65. Clearly Vietnamese words come back after English words
+
+**Status:** Built 2026-11-11. Hieu, on 1.0.3: "sau khi viết 1 từ tiếng anh, thì từ phía sau không tự chuyển sang tiếng việt".
+
+**Cause.** D64 only covers lines that already have Vietnamese. A line that starts in English ("RDS instance type cos", "Database connection pool cos") is in English mode, and D22 kept every word that is also English right after an English word, even ones like cos, nos, toots, rox that people type far more often as có, nó, tốt, rõ.
+
+**Decided.** D22 applies only to real ties: when the Vietnamese reading scores 25+ points (about 300x) above the English one, the word converts in English mode even right after an English word (`AS_CLEAR_OVERRIDES_D22`). "the theme", "of rust", "car", "its", "as" still stay English.
+
+**Measured.** Manual switches: chat 52 → 43, chat with typos 64 → 55, synthetic 115 → 110 (wrong words 11 → 12: "exhausting af" → "à"). Realistic typing: nothing broken.
+
+**Locked by:** rules D65 (3 cases); D22 "video call cos" now gives có.
+
 ## 64. One English word doesn't leave Vietnamese mode
 
 **Status:** Built 2026-11-06. Asked by Hieu: "sau khi tôi viết 1 từ tiếng anh thì từ tiếp theo tôi muốn viết tiếng việt thì phải bấm chuyển về tiếng việt".
